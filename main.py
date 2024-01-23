@@ -9,7 +9,6 @@ nhanes.info()
 # comes out to true, so no duplicates
 nhanes.drop_duplicates().shape == nhanes.shape
 
-nhanes.columns
 
 nhanes = nhanes.rename(columns = {
     "SEQN":"Index",
@@ -48,7 +47,5 @@ nhanes.describe()
 # Loading dataset
 bcw = pd.read_csv("dataset2/breast-cancer-wisconsin.csv")
 
-# Dataset
-bcw = bcw.rename(columns = {
-    
-})
+# Cleaning dataset
+bcw.dropna()
