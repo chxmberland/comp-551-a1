@@ -1,7 +1,31 @@
 import pandas as pd
 
 # DATASET 1
+# __________________________________________
 nhanes = pd.read_csv("dataset1/NHANES_age_prediction.csv")
+nhanes.head()
+nhanes.info()
+
+# comes out to true, so no duplicates
+nhanes.drop_duplicates().shape == nhanes.shape
+
+nhanes.columns
+
+nhanes = nhanes.rename(columns = {
+    "SEQN":"Index",
+    "RIDAGEYR":"Age",
+    "RIAGENDR":"Gender",
+    "PAQ605":"Fitness",
+    "BMXBMI":"BMI",
+    "LBXGLU":"Blood_glucose",
+    "DIQ010":"Diabetic",
+    "LBXGLT": "Oral",
+    "LBXIN": "Insulin"})
+
+
+## No missing values!
+nhanes.isnull().sum()
+nhanes.describe()
 
 # DATASET 2
 # __________________________________________
