@@ -20,7 +20,8 @@ nhanes = nhanes.rename(columns = {
     "LBXGLU":"Blood_glucose",
     "DIQ010":"Diabetic",
     "LBXGLT": "Oral",
-    "LBXIN": "Insulin"})
+    "LBXIN": "Insulin"
+})
 
 
 ## No missing values!
@@ -43,4 +44,11 @@ nhanes.describe()
 # 9. Normal Nucleoli               1 - 10
 # 10. Mitoses                      1 - 10
 # 11. Class:                       (2 for benign, 4 for malignant)
-breast_cancer_wisconsin = pd.read_csv("dataset2/breast-cancer-wisconsin.csv")
+
+# Loading dataset
+bcw = pd.read_csv("dataset2/breast-cancer-wisconsin.csv")
+
+# Dataset
+bcw = bcw.rename(columns = {
+    
+})
