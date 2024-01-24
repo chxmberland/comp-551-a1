@@ -47,17 +47,19 @@ class KNN:
         correct_predictions = 0
 
         # Looping through each point in the test dataset
-        for _, r1 in test_data.iterrows():
+        for i in range(0, len(test_data)):
+            r1 = test_data.iloc[i]
 
             # Dictionary to hold the distances to each other point
             neighbors = {}
 
             # Getting the distance between current test point and all training points
-            for i, r2 in self.training_data.iterrows():
+            for j in range(0, len(self.training_data)):
+                r2 = self.training_data.iloc[j]
 
                 # Taking the rows without ID and label to find the distance between the two
-                dist = self.dist_fn(r1.iloc[1:-1], r2.iloc[1:-1])
-                neighbors[i] = dist
+                dist = self.dist_fn(r1.iloc[:-1], r2.iloc[:-1])
+                neighbors[j] = dist
 
             # Finding the k-nearest neighbors
             nearest_neighbors = sorted(neighbors.items(), key=lambda x: x[1])[:self.K]
@@ -80,8 +82,9 @@ class KNN:
         label_votes = {}
 
         # Counting the labels for each 
-        for n in nearest_neighbors:
-            label = int(self.training_data.iloc[n].iloc[-1])
+        for i in nearest_neighbors:
+            r = self.training_data.iloc[i]
+            label = r.iloc[-1] # Label value
             
             # Adding label vote to the dictionary
             if label_votes.__contains__(label):

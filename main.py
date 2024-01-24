@@ -57,7 +57,7 @@ bcw.replace('?', np.nan, inplace=True)
 bcw = bcw.apply(pd.to_numeric, errors='coerce')
 
 # Dropping all rows with NaN
-bcw.dropna()
+bcw = bcw.dropna()
 
 # ----- TRAINING THE MODEL -----#
 print("\n----- TRAINING ON DATASET TWO -----\n")
@@ -67,14 +67,14 @@ test, validation, train = split_data(bcw, 0.1, 0.1)
 print("From a total sample size of " + str(len(bcw)) 
       + ", the dataset was split into training data (" 
       + str(len(train)) + " samples), test data ("
-      + str(len(test)) + " samples) and training data ("
+      + str(len(test)) + " samples) and validation data ("
       + str(len(validation)) + ")."
 )
 
 # Creating and testing a new model
-for k in range(1, 10):
+for k in range(1, 20):
     print("\nTesting model with k value " + str(k))
-    model = KNN(3)
+    model = KNN(k)
     model.fit(train)
     accuracy = model.predict(test)
-    print("Got efficacy of " + str(accuracy))
+    print("Got efficacy of " + str(round(accuracy, 3)))
