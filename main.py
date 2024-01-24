@@ -6,10 +6,8 @@ nhanes = pd.read_csv("dataset1/NHANES_age_prediction.csv")
 nhanes.head()
 nhanes.info()
 
-# comes out to true, so no duplicates
-nhanes.drop_duplicates().shape == nhanes.shape
-
-
+# Comes out to true, so no duplicates
+print(nhanes.drop_duplicates().shape == nhanes.shape)
 nhanes = nhanes.rename(columns = {
     "SEQN":"Index",
     "RIDAGEYR":"Age",
@@ -22,10 +20,8 @@ nhanes = nhanes.rename(columns = {
     "LBXIN": "Insulin"
 })
 
-
-## No missing values!
-nhanes.isnull().sum()
-nhanes.describe()
+# Check for missing values
+print(nhanes.isnull().sum())
 
 ### ----- Summary stats ----- ###
 
