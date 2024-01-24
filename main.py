@@ -27,6 +27,17 @@ nhanes = nhanes.rename(columns = {
 nhanes.isnull().sum()
 nhanes.describe()
 
+### ----- Summary stats ----- ###
+
+## Gender
+print(nhanes.groupby("age_group")["Gender"].value_counts(normalize = True))
+# No apparent impact of gender upon age group
+
+## Fitness
+print(nhanes.groupby("age_group")["Fitness"].value_counts(normalize = True))
+
+
+
 # DATASET 2
 # __________________________________________
 
