@@ -73,6 +73,7 @@ class KNN:
                 correct_predictions += 1
 
         # Returning the accuracy of the model
+        # TODO: Return a list of predictions instead of the accuracy
         return correct_predictions / len(test_data)
 
 
@@ -81,7 +82,7 @@ class KNN:
     def get_weighted_label(self, nearest_neighbors: list):
         label_votes = {}
 
-        # Counting the labels for each 
+        # Counting the labels for each
         for i in nearest_neighbors:
             r = self.training_data.iloc[i]
             label = r.iloc[-1] # Label value
@@ -94,5 +95,3 @@ class KNN:
 
         # Returning the label with the most votes (sorted in ascending order)
         return sorted(label_votes.items(), key=lambda x: x[1])[-1][0]
-
-            

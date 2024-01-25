@@ -38,6 +38,9 @@ print(nhanes.groupby("age_group")["Gender"].value_counts(normalize = True))
 print("\n----- GROUPING DATASET BY AGE GROUP -----\n")
 print(nhanes.groupby("age_group")["Fitness"].value_counts(normalize = True))
 
+# TODO: Remove noise features
+
+
 ## ----- DATASET 2 ----- ##
 
 # Loading dataset
@@ -58,6 +61,9 @@ bcw = bcw.apply(pd.to_numeric, errors='coerce')
 
 # Dropping all rows with NaN
 bcw = bcw.dropna()
+
+# TODO: Remove noise features
+
 
 # ----- TRAINING THE MODEL -----#
 print("\n----- TRAINING ON DATASET TWO -----\n")
