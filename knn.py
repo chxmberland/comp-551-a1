@@ -5,6 +5,9 @@ import numpy as np
 # Splits the dataset into training and testing data
 # Returns a tuple containing the test data (at index 0) and the training data
 def split_data(dataset: pd.DataFrame, test_split: float, validation_split: float) -> tuple:
+
+    # TODO: Shuffle rows
+
     test_split_index = int(len(dataset) * test_split)
     validation_split_index = int(len(dataset) * (test_split + validation_split))
 
