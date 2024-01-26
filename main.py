@@ -79,10 +79,24 @@ print("From a total sample size of " + str(len(bcw))
 
 # Tuning the hyperparameter
 best_k = 0
-for k in range(1, 10):
+best_accuracy = 0
+for k in range(1, 11):
     print("\nTesting model with k value " + str(k))
+
+    # Creating a new KNN model
     model = KNN(k)
     model.fit(train)
-    new_accuracy = model.predict(validation)
+    new_accuracy = model.predict(validation) # Predict using validation data
     print("Got efficacy of " + str(round(new_accuracy, 3)))
-    best_k =  new_accuracy if new_accuracy > best_k else best_k
+    
+    # Setting k and accuracy variables
+    if new_accuracy > best_accuracy:
+        best_accuracy = new_accuracy
+        best_k = k
+
+print("Using k-value " + str(k))
+
+# Testing with test data
+model = KNN(best_k)
+accuracy = model.predict(test) # Predicting with test data
+print(accuracy)
