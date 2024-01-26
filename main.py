@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 from knn import KNN, split_data
+from dt import DecisionTree
+from sklearn.model_selection import train_test_split
 
 
 # DATASET 1
@@ -118,14 +120,14 @@ bcw = bcw.dropna()
 print("\n----- TRAINING ON DATASET TWO -----\n")
 
 # Splitting into 10% test data,10% validation data and 90% training data
-test, validation, train = split_data(bcw, 0.1, 0.1)
+'''test, validation, train = split_data(bcw, 0.1, 0.1)
 print("From a total sample size of " + str(len(bcw)) 
       + ", the dataset was split into training data (" 
       + str(len(train)) + " samples), test data ("
       + str(len(test)) + " samples) and validation data ("
       + str(len(validation)) + ")."
-)
-
+)'''
+'''
 # Tuning the hyperparameter
 best_k = 0
 best_accuracy = 0
@@ -148,4 +150,38 @@ print("Using k-value " + str(k))
 # Testing with test data
 model = KNN(best_k)
 accuracy = model.predict(test) # Predicting with test data
-print(accuracy)
+print(accuracy)'''
+
+
+
+print("\n----- TRAINING ON DATASET TWO -----\n")
+print(bcw)
+dataset_size = bcw.shape[0]
+bcw = bcw.to_numpy().astype(int)
+#bcw.set_index(pd.Index([i for i in range(bcw.shape[0])]))
+inds = np.random.permutation(dataset_size)
+test_proportion = 0.25
+test_size = int(test_proportion*dataset_size)
+train_size = dataset_size-test_size
+print(train_size, test_size)
+'''x, y = bcw.iloc[:,:-1], bcw.iloc[:,-1]
+
+x_train, y_train = x.iloc[inds[:train_size],:], y.iloc[inds[:train_size]]
+x_test, y_test = x.iloc[inds[train_size:],:], y.iloc[inds[train_size:]]'''
+
+x, y = bcw[:,:-1], bcw[:,-1]
+
+x_train, y_train = x[inds[:train_size]], y[inds[:train_size]]
+x_test, y_test = x[inds[train_size:]], y[inds[train_size:]]
+
+print(x_train, y_train)
+print(x_test, y_test)
+
+DTmodel = DecisionTree()
+DTmodel.fit(x_train, y_train)
+predictedClassProbs = DTmodel.predict(x_test)
+print(predictedClassProbs)
+
+
+#TODO: ISSUE IS THAT RN IF YOU RUN CODE IT GIVES 5 CLASS PROBABILITIES WHEN IT SHOULD J BE 2
+#CHECK WHAT THEY ARE AND WHY THIS IS HAPPENING
