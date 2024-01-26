@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
-from knn import KNN, split_data
+from knn import KNN, split_data, euclidean_distance
+from sklearn.model_selection import train_test_split
 
 
 # DATASET 1
@@ -92,3 +93,20 @@ nhanes.groupby("age_group")["Insulin"].describe()
 # Model 1: continuous variables only for simplicity
 
 nhanes_m1 = nhanes[["BMI", "Blood_glucose", "Oral", "Insulin"]]
+nhanes_target = nhanes["age_group"]
+
+print(nhanes_m1.head())
+
+X_train, X_test, y_train, y_test = train_test_split(
+    nhanes_m1, nhanes_target, test_size = 0.25, random_state = 21
+
+)
+
+X_train, X_valid, y_train, y_valid = train_test_split(
+    X_train, y_train, test_size = 0.33, random_state=22
+)
+
+print("Training features array dimensions:", X_train.shape)
+print("Training target array dimensions:", y_train.shape, "\n")
+print("Validation array dimensions:", X_valid.shape)
+print("Test array dimensions:", X_test.shape)
