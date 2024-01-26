@@ -95,7 +95,7 @@ nhanes.groupby("age_group")["Insulin"].describe()
 nhanes_m1 = nhanes[["BMI", "Blood_glucose", "Oral", "Insulin"]]
 nhanes_target = nhanes["age_group"]
 
-print(nhanes_m1.head())
+print(nhanes_m1.head(), "\n")
 
 X_train, X_test, y_train, y_test = train_test_split(
     nhanes_m1, nhanes_target, test_size = 0.25, random_state = 21
@@ -108,5 +108,10 @@ X_train, X_valid, y_train, y_valid = train_test_split(
 
 print("Training features array dimensions:", X_train.shape)
 print("Training target array dimensions:", y_train.shape, "\n")
-print("Validation array dimensions:", X_valid.shape)
-print("Test array dimensions:", X_test.shape)
+
+print("Validation features array dimensions:", X_valid.shape)
+print("Validation target array dimensions:", y_valid.shape, "\n")
+
+print("Test features array dimensions:", X_test.shape)
+print("Test target array dimensions:", y_test.shape, "\n")
+
