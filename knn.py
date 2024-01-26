@@ -5,6 +5,9 @@ import numpy as np
 # Splits the dataset into training and testing data
 # Returns a tuple containing the test data (at index 0) and the training data
 def split_data(dataset: pd.DataFrame, test_split: float, validation_split: float) -> tuple:
+
+    # TODO: Shuffle rows
+
     test_split_index = int(len(dataset) * test_split)
     validation_split_index = int(len(dataset) * (test_split + validation_split))
 
@@ -73,6 +76,7 @@ class KNN:
                 correct_predictions += 1
 
         # Returning the accuracy of the model
+        # TODO: Return a list of predictions instead of the accuracy
         return correct_predictions / len(test_data)
 
 
@@ -81,7 +85,7 @@ class KNN:
     def get_weighted_label(self, nearest_neighbors: list):
         label_votes = {}
 
-        # Counting the labels for each 
+        # Counting the labels for each
         for i in nearest_neighbors:
             r = self.training_data.iloc[i]
             label = r.iloc[-1] # Label value
@@ -94,5 +98,3 @@ class KNN:
 
         # Returning the label with the most votes (sorted in ascending order)
         return sorted(label_votes.items(), key=lambda x: x[1])[-1][0]
-
-            
