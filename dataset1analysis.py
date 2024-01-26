@@ -97,6 +97,8 @@ nhanes_target = nhanes["age_group"]
 
 print(nhanes_m1.head(), "\n")
 
+## Step 1: splitting data into train, validation, test, roughly 50%, 25%, 25%
+
 X_train, X_test, y_train, y_test = train_test_split(
     nhanes_m1, nhanes_target, test_size = 0.25, random_state = 21
 
@@ -114,4 +116,15 @@ print("Validation target array dimensions:", y_valid.shape, "\n")
 
 print("Test features array dimensions:", X_test.shape)
 print("Test target array dimensions:", y_test.shape, "\n")
+
+
+## Step 2: Tuning hyperparameter for KNN (testing for K)
+
+k_values = []
+k_accuracy = []
+
+for k in range(1,15):
+    knn = KNN(K = k)
+    
+
 

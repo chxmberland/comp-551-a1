@@ -46,7 +46,10 @@ class KNN:
 
 
     # Predicts the labels of samples in the test dataset and returns a percentage accuracy
-    def predict(self, test_data: pd.DataFrame) -> int:
+    def predict(self, test_data: pd.DataFrame) -> list:
+
+        predictions = []
+
         correct_predictions = 0
 
         # Looping through each point in the test dataset
@@ -75,9 +78,8 @@ class KNN:
             if pred_label == int(r1.iloc[-1]):
                 correct_predictions += 1
 
-        # Returning the accuracy of the model
-        # TODO: Return a list of predictions instead of the accuracy
-        return correct_predictions / len(test_data)
+        #
+        return predictions
 
 
     # Predicts the label of a point given a list of IDs of the nearest neighbors to that point
