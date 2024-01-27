@@ -6,15 +6,16 @@ import numpy as np
 # Returns a tuple containing the test data (at index 0) and the training data
 def split_data(dataset: pd.DataFrame, test_split: float, validation_split: float) -> tuple:
 
-    # TODO: Shuffle rows
+    # Shuffling the rows of the dataframe
+    shuffled_df = dataset.sample(frac=1).reset_index(drop=True)
 
-    test_split_index = int(len(dataset) * test_split)
-    validation_split_index = int(len(dataset) * (test_split + validation_split))
+    test_split_index = int(len(shuffled_df) * test_split)
+    validation_split_index = int(len(shuffled_df) * (test_split + validation_split))
 
     # Splitting the dataset into test, validation and training data
-    test_data = dataset[:test_split_index]
-    validation_data = dataset[test_split_index:validation_split_index + 1]
-    training_data = dataset[validation_split_index + 1:]
+    test_data = shuffled_df[:test_split_index]
+    validation_data = shuffled_df[test_split_index:validation_split_index + 1]
+    training_data = shuffled_df[validation_split_index + 1:]
 
     return (test_data, validation_data, training_data)
 
