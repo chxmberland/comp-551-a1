@@ -156,6 +156,7 @@ print(accuracy)'''
 #
 #
 #
+
 print("\n----- TRAINING ON DATASET ONE -----\n")
 
 dataset_size = nhanes.shape[0]
@@ -248,6 +249,11 @@ x, y = bcw[:,:-1], bcw[:,-1]
 
 x_train, y_train = x[inds[:train_size]], y[inds[:train_size]]
 x_test, y_test = x[inds[train_size:]], y[inds[train_size:]]
+
+print(x_train)
+print(y_train)
+print(x_test)
+print(y_test)
 
 #print(x_train, y_train)
 #print(x_test, y_test)
