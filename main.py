@@ -89,7 +89,12 @@ nhanes.groupby("age_group")["Insulin"].describe()
 # - Insulin (cont.)
 
 
-# TODO: Remove noise features
+### ----- Apply KNN ----- ###
+
+# Model 1: continuous variables only for simplicity
+
+nhanes_m1 = nhanes[["BMI", "Blood_glucose", "Oral", "Insulin"]]
+
 
 
 ## ----- DATASET 2 ----- ##

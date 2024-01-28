@@ -1,25 +1,6 @@
 import pandas as pd
 import numpy as np
 
-
-# Splits the dataset into training and testing data
-# Returns a tuple containing the test data (at index 0) and the training data
-def split_data(dataset: pd.DataFrame, test_split: float, validation_split: float) -> tuple:
-
-    # Shuffling the rows of the dataframe
-    shuffled_df = dataset.sample(frac=1).reset_index(drop=True)
-
-    test_split_index = int(len(shuffled_df) * test_split)
-    validation_split_index = int(len(shuffled_df) * (test_split + validation_split))
-
-    # Splitting the dataset into test, validation and training data
-    test_data = shuffled_df[:test_split_index]
-    validation_data = shuffled_df[test_split_index:validation_split_index + 1]
-    training_data = shuffled_df[validation_split_index + 1:]
-
-    return (test_data, validation_data, training_data)
-
-
 # Finds the euclidean distance between two rows in a Pandas DataFrame.
 # It treats the values in each column of the rows as a point in a dimension in space.
 #
@@ -36,49 +17,51 @@ def euclidean_distance(r1: pd.Series, r2: pd.Series):
 class KNN:
 
 
-    def __init__(self, K=1, dist_fn=euclidean_distance):
+    def __init__(self, K = 1, dist_fn = euclidean_distance):
         self.dist_fn = dist_fn
         self.K = K
 
 
     # Memorizes the data
-    def fit(self, training_data: pd.DataFrame) -> None:
-        self.training_data = training_data
+    def fit(self, training_features, training_target):
+        self.x = training_features
+        self.y = training_target
 
 
     # Predicts the labels of samples in the test dataset and returns a percentage accuracy
-    def predict(self, test_data: pd.DataFrame) -> int:
-        correct_predictions = 0
+    def predict(self, test_data: pd.DataFrame) -> list:
+
+        predictions = []
 
         # Looping through each point in the test dataset
         for i in range(0, len(test_data)):
-            r1 = test_data.iloc[i]
+            test_row = test_data.iloc[i]
 
             # Dictionary to hold the distances to each other point
             neighbors = {}
 
             # Getting the distance between current test point and all training points
+            # j being the index of each training row
             for j in range(0, len(self.training_data)):
-                r2 = self.training_data.iloc[j]
+                train_row = self.training_data.iloc[j]
 
-                # Taking the rows without ID and label to find the distance between the two
-                dist = self.dist_fn(r1.iloc[:-1], r2.iloc[:-1])
+                # Taking the rows to find the distance between the two
+                dist = self.dist_fn(test_row, train_row)
                 neighbors[j] = dist
 
             # Finding the k-nearest neighbors
-            nearest_neighbors = sorted(neighbors.items(), key=lambda x: x[1])[:self.K]
+            nearest_neighbors = sorted(neighbors.items(), key=lambda x: x[1])[:self.K] # sorted list of tuples
             nearest_neighbors = [x[0] for x in  nearest_neighbors] # List containing only indexes of nearest neighbors
 
             # Getting the predicted label for the new point
             pred_label = self.get_weighted_label(nearest_neighbors)
 
             # Checking to see if predicted label is correct
-            if pred_label == int(r1.iloc[-1]):
+            if pred_label == int(test_row.iloc[-1]):
                 correct_predictions += 1
 
-        # Returning the accuracy of the model
-        # TODO: Return a list of predictions instead of the accuracy
-        return correct_predictions / len(test_data)
+        #
+        return predictions
 
 
     # Predicts the label of a point given a list of IDs of the nearest neighbors to that point
