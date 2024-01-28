@@ -205,6 +205,8 @@ print(str(round(accuracy, 2)))
 #
 #
 
+print("\n----- DECISION TREE SECTION -----\n")
+
 print("\n----- TRAINING ON DATASET ONE -----\n")
 
 dataset_size = nhanes.shape[0]
@@ -225,7 +227,7 @@ for col in range(num_cols):
     else:
         nhanes[:, col] = (nhanes[:, col]).astype(int)
 
-print(nhanes)
+
 c = 0
 #for i in range(num_cols):
 #    for j in range(dataset_size):
@@ -254,10 +256,6 @@ x, y = nhanes[:,np.array(want_to_select)], nhanes[:,1]
 x_train, y_train = x[inds[:train_size]], y[inds[:train_size]]
 x_test, y_test = x[inds[train_size:]], y[inds[train_size:]]
 
-print(x_train)
-print(y_train)
-print(x_test)
-print(y_test)
 
 #print(x_train, y_train)
 #print(x_test, y_test)
@@ -284,7 +282,7 @@ for i in range(len(predictedClasses)):
         accurate_preds += 1
 
 accuracy = accurate_preds / len(predictedClasses)
-print(accuracy)
+print(f'ACCURACY ON DATASET ONE OF DECISION TREE IS {accuracy}')
 
 print("\n----- TRAINING ON DATASET TWO -----\n")
 #print(bcw)
@@ -306,10 +304,6 @@ x, y = bcw[:,:-1], bcw[:,-1]
 x_train, y_train = x[inds[:train_size]], y[inds[:train_size]]
 x_test, y_test = x[inds[train_size:]], y[inds[train_size:]]
 
-print(x_train)
-print(y_train)
-print(x_test)
-print(y_test)
 
 #print(x_train, y_train)
 #print(x_test, y_test)
@@ -336,7 +330,7 @@ for i in range(len(predictedClasses)):
         accurate_preds += 1
 
 accuracy = accurate_preds / len(predictedClasses)
-print(accuracy)
+print(f'ACCURACY ON DATASET TWO OF DECISION TREE IS {accuracy}')
 
 
 #TODO: CREATE VALIDATION SET AND FUCK AROUND WITH MAX DEPTH AND DIFF COST FUNCTIONS FOR REPORT
