@@ -83,8 +83,8 @@ class DecisionTree:
         self.data = data
         self.labels = labels
         if self.num_classes is None:
-            #self.num_classes = np.max(labels) + 1
-            self.num_classes = len(np.unique(labels))
+            self.num_classes = np.max(labels) + 1
+            #self.num_classes = len(np.unique(labels))
         #below are initialization of the root of the decision tree
         self.root = Node(np.arange(data.shape[0]), None)
         self.root.data = data
@@ -120,7 +120,8 @@ class DecisionTree:
         node.left = left
         node.right = right
 
-    def predict(self, data_test):
+    #old returning class probs
+    '''def predict(self, data_test):
         class_probs = np.zeros((data_test.shape[0], self.num_classes))
         for n, x in enumerate(data_test):
             node = self.root
@@ -132,6 +133,22 @@ class DecisionTree:
                     node = node.right
             #the loop terminates when you reach a leaf of the tree and the class probability of that node is taken for prediction
             class_probs[n,:] = node.class_prob
+        return class_probs'''
+    
+    def predict(self, data_test):
+        class_probs = np.zeros((data_test.shape[0], self.num_classes))
+        #class_probs = []
+        for n, x in enumerate(data_test):
+            node = self.root
+            #loop along the dept of the tree looking region where the present data sample fall in based on the split feature and value
+            while node.left:
+                if x[node.split_feature] <= node.split_value:
+                    node = node.left
+                else:
+                    node = node.right
+            #the loop terminates when you reach a leaf of the tree and the class probability of that node is taken for prediction
+            class_probs[n,:] = node.class_prob
+            #class_probs.append(node.class_prob)
         return class_probs
     
     
