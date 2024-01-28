@@ -125,14 +125,14 @@ bcw = bcw.dropna()
 #print("\n----- TRAINING ON DATASET TWO -----\n")
 
 # Splitting into 10% test data,10% validation data and 90% training data
-'''test, validation, train = split_data(bcw, 0.1, 0.1)
+test, validation, train = split_data(bcw, 0.1, 0.1)
 print("From a total sample size of " + str(len(bcw)) 
       + ", the dataset was split into training data (" 
       + str(len(train)) + " samples), test data ("
       + str(len(test)) + " samples) and validation data ("
       + str(len(validation)) + ")."
-)'''
-'''
+)
+
 # Tuning the hyperparameter
 best_k = 0
 best_accuracy = 0
@@ -155,7 +155,7 @@ print("Using k-value " + str(k))
 # Testing with test data
 model = KNN(best_k)
 accuracy = model.predict(test) # Predicting with test data
-print(accuracy)'''
+print(accuracy)
 
 #DECISION TREE
 #
@@ -296,5 +296,4 @@ accuracy = accurate_preds / len(predictedClasses)
 print(accuracy)
 
 
-#TODO: ISSUE IS THAT RN IF YOU RUN CODE IT GIVES 5 CLASS PROBABILITIES WHEN IT SHOULD J BE 2
-#CHECK WHAT THEY ARE AND WHY THIS IS HAPPENING
+#TODO: CREATE VALIDATION SET AND FUCK AROUND WITH MAX DEPTH AND DIFF COST FUNCTIONS FOR REPORT
