@@ -183,8 +183,14 @@ for col in range(num_cols):
         nhanes[:, col] = (nhanes[:, col]).astype(int)
 
 print(nhanes)
-for i in range(num_cols):
-    print(type(nhanes[0,i]))
+c = 0
+#for i in range(num_cols):
+#    for j in range(dataset_size):
+#        if type(nhanes[j,i]) != int:
+#            print(type(nhanes[j,i]))
+#            c += 1
+
+    #print(type(nhanes[0,i]))
 #bcw.set_index(pd.Index([i for i in range(bcw.shape[0])]))
 inds = np.random.permutation(dataset_size)
 test_proportion = 0.25
@@ -197,6 +203,8 @@ x_train, y_train = x.iloc[inds[:train_size],:], y.iloc[inds[:train_size]]
 x_test, y_test = x.iloc[inds[train_size:],:], y.iloc[inds[train_size:]]'''
 
 want_to_select = [True for _ in range(num_cols)]
+#remove ID and age label from X features
+want_to_select[0] = False
 want_to_select[1] = False
 x, y = nhanes[:,np.array(want_to_select)], nhanes[:,1]
 

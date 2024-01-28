@@ -13,7 +13,10 @@ class Node:
             self.num_classes = parent.num_classes           #copies the num classes from the parent 
             self.data = parent.data                         #copies the data from the parent
             self.labels = parent.labels                     #copies the labels from the parent
-            class_prob = np.bincount(self.labels[data_indices], minlength=self.num_classes) #this is counting frequency of different labels in the region defined by this node
+            try:
+                class_prob = np.bincount(self.labels[data_indices], minlength=self.num_classes) #this is counting frequency of different labels in the region defined by this node
+            except:
+                class_prob = np.bincount(self.labels.astype(int)[data_indices], minlength=self.num_classes)
             self.class_prob = class_prob / np.sum(class_prob)  #stores the class probability for the node
             #note that we'll use the class probabilites of the leaf nodes for making pr
 
@@ -60,7 +63,10 @@ def cost_misclassification(labels):
 
 #computes entropy of the labels by computing the class probabilities
 def cost_entropy(labels):
-    class_probs = np.bincount(labels) / len(labels)
+    try:
+        class_probs = np.bincount(labels) / len(labels)
+    except:
+        class_probs = np.bincount(labels.astype(int)) / len(labels)
     class_probs = class_probs[class_probs > 0]              #this steps is remove 0 probabilities for removing numerical issues while computing log
     return -np.sum(class_probs * np.log2(class_probs))       #expression for entropy -\sigma p(x)log[p(x)]
 
