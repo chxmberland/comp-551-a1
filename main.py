@@ -41,6 +41,10 @@ nhanes = nhanes.drop(nhanes[nhanes["Fitness"] == 7].index)
 # Verify:
 nhanes["Fitness"].value_counts()
 
+# Changing classes column to integers
+nhanes['age_group'] = nhanes['age_group'].replace({"Adult": 0, "Senior": 1})
+print(nhanes)
+
 
 ### ----- Summary stats ----- ###
 
@@ -118,20 +122,21 @@ bcw = bcw.dropna()
 
 # TODO: Remove noise features
 
-
 # ----- TRAINING THE MODEL -----#
-print("\n----- TRAINING ON DATASET TWO -----\n")
+
+# ----- TRAINING ON DATASET ONE ----- #
+
+print("\n----- TRAINING ON DATASET ONE -----\n")
 
 # Splitting into 10% test data,10% validation data and 90% training data
-test, validation, train = split_data(bcw, 0.1, 0.1)
+test_x, test_y, validation_x, validation_y, train_x, train_y = split_data(nhanes, 0.1, 0.1, 1) # Labels are in column 1
 print("From a total sample size of " + str(len(bcw)) 
       + ", the dataset was split into training data (" 
-      + str(len(train)) + " samples), test data ("
-      + str(len(test)) + " samples) and validation data ("
-      + str(len(validation)) + ")."
+      + str(len(train_x)) + " samples), test data ("
+      + str(len(test_x)) + " samples) and validation data ("
+      + str(len(validation_x)) + ")."
 )
 
-# Tuning the hyperparameter
 best_k = 0
 best_accuracy = 0
 for k in range(1, 11):
@@ -139,8 +144,8 @@ for k in range(1, 11):
 
     # Creating a new KNN model
     model = KNN(k)
-    model.fit(train)
-    new_accuracy = model.predict(validation) # Predict using validation data
+    model.fit(train_x, train_y)
+    new_accuracy = model.predict(validation_x, validation_y) # Predict using validation data
     print("Got efficacy of " + str(round(new_accuracy, 3)))
     
     # Setting k and accuracy variables
@@ -148,9 +153,47 @@ for k in range(1, 11):
         best_accuracy = new_accuracy
         best_k = k
 
-print("Using k-value " + str(k))
+print("\nUsing k-value on test data " + str(best_k))
 
 # Testing with test data
 model = KNN(best_k)
-accuracy = model.predict(test) # Predicting with test data
-print(accuracy)
+model.fit(train_x, train_y)
+accuracy = model.predict(test_x, test_y) # Predicting with test data
+print(str(round(accuracy, 2)))
+
+# ----- TRAINING DATASET TWO ----- #
+
+print("\n----- TRAINING ON DATASET TWO -----\n")
+
+# Splitting into 10% test data,10% validation data and 90% training data
+test_x, test_y, validation_x, validation_y, train_x, train_y = split_data(bcw, 0.1, 0.1, bcw.shape[1] - 1)
+print("From a total sample size of " + str(len(bcw)) 
+      + ", the dataset was split into training data (" 
+      + str(len(train_x)) + " samples), test data ("
+      + str(len(test_x)) + " samples) and validation data ("
+      + str(len(validation_x)) + ")."
+)
+
+best_k = 0
+best_accuracy = 0
+for k in range(1, 11):
+    print("\nTesting model with k value " + str(k))
+
+    # Creating a new KNN model
+    model = KNN(k)
+    model.fit(train_x, train_y)
+    new_accuracy = model.predict(validation_x, validation_y) # Predict using validation data
+    print("Got efficacy of " + str(round(new_accuracy, 3)))
+    
+    # Setting k and accuracy variables
+    if new_accuracy > best_accuracy:
+        best_accuracy = new_accuracy
+        best_k = k
+
+print("\nUsing k-value on test data " + str(best_k))
+
+# Testing with test data
+model = KNN(best_k)
+model.fit(train_x, train_y)
+accuracy = model.predict(test_x, test_y) # Predicting with test data
+print(str(round(accuracy, 2)))
