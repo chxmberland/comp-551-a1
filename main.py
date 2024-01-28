@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 from knn import KNN, split_data
+from dt import DecisionTree
+from sklearn.model_selection import train_test_split
 
 
 # DATASET 1
@@ -197,3 +199,138 @@ model = KNN(best_k)
 model.fit(train_x, train_y)
 accuracy = model.predict(test_x, test_y) # Predicting with test data
 print(str(round(accuracy, 2)))
+
+#DECISION TREE
+#
+#
+#
+
+print("\n----- DECISION TREE SECTION -----\n")
+
+print("\n----- TRAINING ON DATASET ONE -----\n")
+
+dataset_size = nhanes.shape[0]
+num_cols = nhanes.shape[1]
+#NEED TO FIGURE OUT HOW 
+nhanes = nhanes.to_numpy()
+
+#replace 'male' and 'female' with 0 and 1 respectively
+nhanes[:, 1] = np.where(nhanes[:, 1].astype(str) == 'Adult', 0, 1).astype(int)
+#change float col to int
+nhanes[:, -1] = (nhanes[:, -1] * 100).astype(int)
+
+
+#change all cols to int
+for col in range(num_cols):
+    if col == 1 or col == num_cols - 1:
+        continue
+    else:
+        nhanes[:, col] = (nhanes[:, col]).astype(int)
+
+
+c = 0
+#for i in range(num_cols):
+#    for j in range(dataset_size):
+#        if type(nhanes[j,i]) != int:
+#            print(type(nhanes[j,i]))
+#            c += 1
+
+    #print(type(nhanes[0,i]))
+#bcw.set_index(pd.Index([i for i in range(bcw.shape[0])]))
+inds = np.random.permutation(dataset_size)
+test_proportion = 0.25
+test_size = int(test_proportion*dataset_size)
+train_size = dataset_size-test_size
+#print(train_size, test_size)
+'''x, y = bcw.iloc[:,:-1], bcw.iloc[:,-1]
+
+x_train, y_train = x.iloc[inds[:train_size],:], y.iloc[inds[:train_size]]
+x_test, y_test = x.iloc[inds[train_size:],:], y.iloc[inds[train_size:]]'''
+
+want_to_select = [True for _ in range(num_cols)]
+#remove ID and age label from X features
+want_to_select[0] = False
+want_to_select[1] = False
+x, y = nhanes[:,np.array(want_to_select)], nhanes[:,1]
+
+x_train, y_train = x[inds[:train_size]], y[inds[:train_size]]
+x_test, y_test = x[inds[train_size:]], y[inds[train_size:]]
+
+
+#print(x_train, y_train)
+#print(x_test, y_test)
+
+DTmodel = DecisionTree()
+DTmodel.fit(x_train, y_train)
+predictedClassProbs = DTmodel.predict(x_test)
+#print(predictedClassProbs)
+predictedClasses = []
+for v in predictedClassProbs:
+    maxp = -1
+    maxIndex = -1
+    for i in range(len(v)):
+        if v[i] > maxp:
+            maxp = v[i]
+            maxIndex = i
+    predictedClasses.append(maxIndex)
+
+#print(predictedClasses)
+
+accurate_preds = 0
+for i in range(len(predictedClasses)):
+    if predictedClasses[i] == y_test[i]:
+        accurate_preds += 1
+
+accuracy = accurate_preds / len(predictedClasses)
+print(f'ACCURACY ON DATASET ONE OF DECISION TREE IS {accuracy}')
+
+print("\n----- TRAINING ON DATASET TWO -----\n")
+#print(bcw)
+dataset_size = bcw.shape[0]
+bcw = bcw.to_numpy().astype(int)
+#bcw.set_index(pd.Index([i for i in range(bcw.shape[0])]))
+inds = np.random.permutation(dataset_size)
+test_proportion = 0.25
+test_size = int(test_proportion*dataset_size)
+train_size = dataset_size-test_size
+#print(train_size, test_size)
+'''x, y = bcw.iloc[:,:-1], bcw.iloc[:,-1]
+
+x_train, y_train = x.iloc[inds[:train_size],:], y.iloc[inds[:train_size]]
+x_test, y_test = x.iloc[inds[train_size:],:], y.iloc[inds[train_size:]]'''
+
+x, y = bcw[:,:-1], bcw[:,-1]
+
+x_train, y_train = x[inds[:train_size]], y[inds[:train_size]]
+x_test, y_test = x[inds[train_size:]], y[inds[train_size:]]
+
+
+#print(x_train, y_train)
+#print(x_test, y_test)
+
+DTmodel = DecisionTree()
+DTmodel.fit(x_train, y_train)
+predictedClassProbs = DTmodel.predict(x_test)
+#print(predictedClassProbs)
+predictedClasses = []
+for v in predictedClassProbs:
+    maxp = -1
+    maxIndex = -1
+    for i in range(len(v)):
+        if v[i] > maxp:
+            maxp = v[i]
+            maxIndex = i
+    predictedClasses.append(maxIndex)
+
+#print(predictedClasses)
+
+accurate_preds = 0
+for i in range(len(predictedClasses)):
+    if predictedClasses[i] == y_test[i]:
+        accurate_preds += 1
+
+accuracy = accurate_preds / len(predictedClasses)
+print(f'ACCURACY ON DATASET TWO OF DECISION TREE IS {accuracy}')
+
+
+#TODO: CREATE VALIDATION SET AND FUCK AROUND WITH MAX DEPTH AND DIFF COST FUNCTIONS FOR REPORT
