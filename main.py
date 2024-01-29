@@ -127,7 +127,7 @@ bcw = bcw.dropna()
 # ----- TRAINING THE MODEL -----#
 
 # ----- TRAINING ON DATASET ONE ----- #
-
+'''
 print("\n----- TRAINING ON DATASET ONE -----\n")
 
 # Splitting into 10% test data,10% validation data and 90% training data
@@ -204,7 +204,7 @@ print(str(round(accuracy, 2)))
 #
 #
 #
-
+'''
 print("\n----- DECISION TREE SECTION -----\n")
 
 print("\n----- TRAINING ON DATASET ONE -----\n")
@@ -238,9 +238,15 @@ c = 0
     #print(type(nhanes[0,i]))
 #bcw.set_index(pd.Index([i for i in range(bcw.shape[0])]))
 inds = np.random.permutation(dataset_size)
-test_proportion = 0.25
+'''test_proportion = 0.25
 test_size = int(test_proportion*dataset_size)
 train_size = dataset_size-test_size
+'''
+test_proportion = 0.25
+validate_proportion = 0.25
+test_size = int(test_proportion*dataset_size)
+validate_size = int(validate_proportion*dataset_size)
+train_size = dataset_size-test_size-validate_size
 
 
 want_to_select = [True for _ in range(num_cols)]
@@ -249,8 +255,12 @@ want_to_select[0] = False
 want_to_select[1] = False
 x, y = nhanes[:,np.array(want_to_select)], nhanes[:,1]
 
+'''x_train, y_train = x[inds[:train_size]], y[inds[:train_size]]
+x_test, y_test = x[inds[train_size:]], y[inds[train_size:]]'''
+
 x_train, y_train = x[inds[:train_size]], y[inds[:train_size]]
-x_test, y_test = x[inds[train_size:]], y[inds[train_size:]]
+x_validate, y_validate = x[inds[train_size:train_size+validate_size]], y[inds[train_size:train_size+validate_size]]
+x_test, y_test = x[inds[train_size+validate_size:]], y[inds[train_size+validate_size:]]
 
 cost_functions = ["cost_misclassification", "cost_gini_index", "cost_entropy"]
 max_max_depth = 10
@@ -284,14 +294,26 @@ dataset_size = bcw.shape[0]
 bcw = bcw.to_numpy().astype(int)
 
 inds = np.random.permutation(dataset_size)
-test_proportion = 0.25
+'''test_proportion = 0.25
 test_size = int(test_proportion*dataset_size)
 train_size = dataset_size-test_size
 
 x, y = bcw[:,:-1], bcw[:,-1]
 
 x_train, y_train = x[inds[:train_size]], y[inds[:train_size]]
-x_test, y_test = x[inds[train_size:]], y[inds[train_size:]]
+x_test, y_test = x[inds[train_size:]], y[inds[train_size:]]'''
+
+test_proportion = 0.25
+validate_proportion = 0.25
+test_size = int(test_proportion*dataset_size)
+validate_size = int(validate_proportion*dataset_size)
+train_size = dataset_size-test_size-validate_size
+
+x, y = bcw[:,:-1], bcw[:,-1]
+
+x_train, y_train = x[inds[:train_size]], y[inds[:train_size]]
+x_validate, y_validate = x[inds[train_size:train_size+validate_size]], y[inds[train_size:train_size+validate_size]]
+x_test, y_test = x[inds[train_size+validate_size:]], y[inds[train_size+validate_size:]]
 
 for fn in cost_functions:
     for max_depth in range(1,max_depth+1):
@@ -317,4 +339,4 @@ for fn in cost_functions:
         print(f'ACCURACY ON DATASET TWO OF DECISION TREE WITH COST FUNCTION {fn} AND MAX DEPTH {max_depth} IS {accuracy}')
 
 
-#TODO: CREATE VALIDATION SET AND FUCK AROUND WITH MAX DEPTH AND DIFF COST FUNCTIONS FOR REPORT
+#TODO: USE VALIDATION SET LIKE THEY DO IN EXAMPLE DT CODE TO PARAMETRIZE MODEL

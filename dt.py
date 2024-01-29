@@ -16,7 +16,8 @@ class Node:
             try:
                 class_prob = np.bincount(self.labels[data_indices], minlength=self.num_classes) #this is counting frequency of different labels in the region defined by this node
             except:
-                class_prob = np.bincount(self.labels.astype(int)[data_indices], minlength=self.num_classes)
+                intlabels = self.labels.astype(int)
+                class_prob = np.bincount(intlabels[data_indices], minlength=self.num_classes)
             self.class_prob = class_prob / np.sum(class_prob)  #stores the class probability for the node
             #note that we'll use the class probabilites of the leaf nodes for making pr
 
@@ -102,7 +103,7 @@ class DecisionTree:
         self.data = data
         self.labels = labels
         if self.num_classes is None:
-            self.num_classes = np.max(labels) + 1
+            self.num_classes = int(np.max(labels) + 1)
             #self.num_classes = len(np.unique(labels))
         #below are initialization of the root of the decision tree
         self.root = Node(np.arange(data.shape[0]), None)
