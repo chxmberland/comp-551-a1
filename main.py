@@ -241,11 +241,7 @@ inds = np.random.permutation(dataset_size)
 test_proportion = 0.25
 test_size = int(test_proportion*dataset_size)
 train_size = dataset_size-test_size
-#print(train_size, test_size)
-'''x, y = bcw.iloc[:,:-1], bcw.iloc[:,-1]
 
-x_train, y_train = x.iloc[inds[:train_size],:], y.iloc[inds[:train_size]]
-x_test, y_test = x.iloc[inds[train_size:],:], y.iloc[inds[train_size:]]'''
 
 want_to_select = [True for _ in range(num_cols)]
 #remove ID and age label from X features
@@ -256,81 +252,69 @@ x, y = nhanes[:,np.array(want_to_select)], nhanes[:,1]
 x_train, y_train = x[inds[:train_size]], y[inds[:train_size]]
 x_test, y_test = x[inds[train_size:]], y[inds[train_size:]]
 
+cost_functions = ["cost_misclassification", "cost_gini_index", "cost_entropy"]
+max_max_depth = 10
 
-#print(x_train, y_train)
-#print(x_test, y_test)
+for fn in cost_functions:
+    for max_depth in range(1,max_depth+1):
+        DTmodel = DecisionTree(max_depth=max_depth, cost_fn=fn)
+        DTmodel.fit(x_train, y_train)
+        predictedClassProbs = DTmodel.predict(x_test)
+        predictedClasses = []
+        for v in predictedClassProbs:
+            maxp = -1
+            maxIndex = -1
+            for i in range(len(v)):
+                if v[i] > maxp:
+                    maxp = v[i]
+                    maxIndex = i
+            predictedClasses.append(maxIndex)
 
-DTmodel = DecisionTree()
-DTmodel.fit(x_train, y_train)
-predictedClassProbs = DTmodel.predict(x_test)
-#print(predictedClassProbs)
-predictedClasses = []
-for v in predictedClassProbs:
-    maxp = -1
-    maxIndex = -1
-    for i in range(len(v)):
-        if v[i] > maxp:
-            maxp = v[i]
-            maxIndex = i
-    predictedClasses.append(maxIndex)
+        accurate_preds = 0
+        for i in range(len(predictedClasses)):
+            if predictedClasses[i] == y_test[i]:
+                accurate_preds += 1
 
-#print(predictedClasses)
-
-accurate_preds = 0
-for i in range(len(predictedClasses)):
-    if predictedClasses[i] == y_test[i]:
-        accurate_preds += 1
-
-accuracy = accurate_preds / len(predictedClasses)
-print(f'ACCURACY ON DATASET ONE OF DECISION TREE IS {accuracy}')
+        accuracy = accurate_preds / len(predictedClasses)
+        print(f'ACCURACY ON DATASET ONE OF DECISION TREE WITH COST FUNCTION {fn} AND MAX DEPTH {max_depth} IS {accuracy}')
 
 print("\n----- TRAINING ON DATASET TWO -----\n")
-#print(bcw)
+
 dataset_size = bcw.shape[0]
 bcw = bcw.to_numpy().astype(int)
-#bcw.set_index(pd.Index([i for i in range(bcw.shape[0])]))
+
 inds = np.random.permutation(dataset_size)
 test_proportion = 0.25
 test_size = int(test_proportion*dataset_size)
 train_size = dataset_size-test_size
-#print(train_size, test_size)
-'''x, y = bcw.iloc[:,:-1], bcw.iloc[:,-1]
-
-x_train, y_train = x.iloc[inds[:train_size],:], y.iloc[inds[:train_size]]
-x_test, y_test = x.iloc[inds[train_size:],:], y.iloc[inds[train_size:]]'''
 
 x, y = bcw[:,:-1], bcw[:,-1]
 
 x_train, y_train = x[inds[:train_size]], y[inds[:train_size]]
 x_test, y_test = x[inds[train_size:]], y[inds[train_size:]]
 
+for fn in cost_functions:
+    for max_depth in range(1,max_depth+1):
+        DTmodel = DecisionTree(max_depth=max_depth, cost_fn=fn)
+        DTmodel.fit(x_train, y_train)
+        predictedClassProbs = DTmodel.predict(x_test)
+        predictedClasses = []
+        for v in predictedClassProbs:
+            maxp = -1
+            maxIndex = -1
+            for i in range(len(v)):
+                if v[i] > maxp:
+                    maxp = v[i]
+                    maxIndex = i
+            predictedClasses.append(maxIndex)
 
-#print(x_train, y_train)
-#print(x_test, y_test)
+        accurate_preds = 0
+        for i in range(len(predictedClasses)):
+            if predictedClasses[i] == y_test[i]:
+                accurate_preds += 1
 
-DTmodel = DecisionTree()
-DTmodel.fit(x_train, y_train)
-predictedClassProbs = DTmodel.predict(x_test)
-#print(predictedClassProbs)
-predictedClasses = []
-for v in predictedClassProbs:
-    maxp = -1
-    maxIndex = -1
-    for i in range(len(v)):
-        if v[i] > maxp:
-            maxp = v[i]
-            maxIndex = i
-    predictedClasses.append(maxIndex)
-
-#print(predictedClasses)
-
-accurate_preds = 0
-for i in range(len(predictedClasses)):
-    if predictedClasses[i] == y_test[i]:
-        accurate_preds += 1
-
-accuracy = accurate_preds / len(predictedClasses)
-print(f'ACCURACY ON DATASET TWO OF DECISION TREE IS {accuracy}')
+        accuracy = accurate_preds / len(predictedClasses)
+        print(f'ACCURACY ON DATASET TWO OF DECISION TREE WITH COST FUNCTION {fn} AND MAX DEPTH {max_depth} IS {accuracy}')
 
 
 #TODO: CREATE VALIDATION SET AND FUCK AROUND WITH MAX DEPTH AND DIFF COST FUNCTIONS FOR REPORT

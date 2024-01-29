@@ -78,10 +78,17 @@ def cost_gini_index(labels):
 
 
 class DecisionTree:
-    def __init__(self, num_classes=None, max_depth=3, cost_fn=cost_entropy, min_leaf_instances=1):
+    def __init__(self, num_classes=None, max_depth=3, cost_fn="cost_entropy", min_leaf_instances=1):
         self.max_depth = max_depth      #maximum dept for termination 
         self.root = None                #stores the root of the decision tree 
-        self.cost_fn = cost_fn          #stores the cost function of the decision tree 
+        if cost_fn == "cost_entropy":
+            self.cost_fn = cost_entropy
+        elif cost_fn == "cost_gini_index":
+            self.cost_fn = cost_gini_index
+        elif cost_fn == "cost_misclassification":
+            self.cost_fn = cost_misclassification
+        else:
+            self.cost_fn = cost_entropy
         self.num_classes = num_classes  #stores the total number of classes
         self.min_leaf_instances = min_leaf_instances  #minimum number of instances in a leaf for termination
         
