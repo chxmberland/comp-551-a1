@@ -60,7 +60,6 @@ def cost_misclassification(labels):
         counts = np.bincount(labels) 
     except:
         counts = np.bincount(labels.astype(int)) 
-    counts = np.bincount(labels) 
     class_probs = counts / np.sum(counts)
     #you could compress both the steps above by doing class_probs = np.bincount(labels) / len(labels)
     return 1 - np.max(class_probs)
