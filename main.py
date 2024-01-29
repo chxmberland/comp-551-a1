@@ -256,7 +256,7 @@ cost_functions = ["cost_misclassification", "cost_gini_index", "cost_entropy"]
 max_max_depth = 10
 
 for fn in cost_functions:
-    for max_depth in range(1,max_depth+1):
+    for max_depth in range(1,max_max_depth+1):
         DTmodel = DecisionTree(max_depth=max_depth, cost_fn=fn)
         DTmodel.fit(x_train, y_train)
         predictedClassProbs = DTmodel.predict(x_test)

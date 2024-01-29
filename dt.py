@@ -56,6 +56,10 @@ def greedy_test(node, cost_fn):
 
 #computes misclassification cost by subtracting the maximum probability of any class
 def cost_misclassification(labels):
+    try:
+        counts = np.bincount(labels) 
+    except:
+        counts = np.bincount(labels.astype(int)) 
     counts = np.bincount(labels) 
     class_probs = counts / np.sum(counts)
     #you could compress both the steps above by doing class_probs = np.bincount(labels) / len(labels)
@@ -72,7 +76,10 @@ def cost_entropy(labels):
 
 #computes the gini index cost
 def cost_gini_index(labels):
-    class_probs = np.bincount(labels) / len(labels)
+    try:
+        class_probs = np.bincount(labels) / len(labels)
+    except:
+        class_probs = np.bincount(labels.astype(int)) / len(labels)
     return 1 - np.sum(np.square(class_probs))               #expression for gini index 1-\sigma p(x)^2
 
 
