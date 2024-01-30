@@ -16,7 +16,8 @@ class Node:
             try:
                 class_prob = np.bincount(self.labels[data_indices], minlength=self.num_classes) #this is counting frequency of different labels in the region defined by this node
             except:
-                class_prob = np.bincount(self.labels.astype(int)[data_indices], minlength=self.num_classes)
+                intlabels = self.labels.astype(int)
+                class_prob = np.bincount(intlabels[data_indices], minlength=self.num_classes)
             self.class_prob = class_prob / np.sum(class_prob)  #stores the class probability for the node
             #note that we'll use the class probabilites of the leaf nodes for making pr
 
@@ -56,7 +57,10 @@ def greedy_test(node, cost_fn):
 
 #computes misclassification cost by subtracting the maximum probability of any class
 def cost_misclassification(labels):
-    counts = np.bincount(labels) 
+    try:
+        counts = np.bincount(labels) 
+    except:
+        counts = np.bincount(labels.astype(int)) 
     class_probs = counts / np.sum(counts)
     #you could compress both the steps above by doing class_probs = np.bincount(labels) / len(labels)
     return 1 - np.max(class_probs)
@@ -72,16 +76,26 @@ def cost_entropy(labels):
 
 #computes the gini index cost
 def cost_gini_index(labels):
-    class_probs = np.bincount(labels) / len(labels)
+    try:
+        class_probs = np.bincount(labels) / len(labels)
+    except:
+        class_probs = np.bincount(labels.astype(int)) / len(labels)
     return 1 - np.sum(np.square(class_probs))               #expression for gini index 1-\sigma p(x)^2
 
 
 
 class DecisionTree:
-    def __init__(self, num_classes=None, max_depth=3, cost_fn=cost_entropy, min_leaf_instances=1):
+    def __init__(self, num_classes=None, max_depth=3, cost_fn="cost_entropy", min_leaf_instances=1):
         self.max_depth = max_depth      #maximum dept for termination 
         self.root = None                #stores the root of the decision tree 
-        self.cost_fn = cost_fn          #stores the cost function of the decision tree 
+        if cost_fn == "cost_entropy":
+            self.cost_fn = cost_entropy
+        elif cost_fn == "cost_gini_index":
+            self.cost_fn = cost_gini_index
+        elif cost_fn == "cost_misclassification":
+            self.cost_fn = cost_misclassification
+        else:
+            self.cost_fn = cost_entropy
         self.num_classes = num_classes  #stores the total number of classes
         self.min_leaf_instances = min_leaf_instances  #minimum number of instances in a leaf for termination
         
@@ -89,7 +103,7 @@ class DecisionTree:
         self.data = data
         self.labels = labels
         if self.num_classes is None:
-            self.num_classes = np.max(labels) + 1
+            self.num_classes = int(np.max(labels) + 1)
             #self.num_classes = len(np.unique(labels))
         #below are initialization of the root of the decision tree
         self.root = Node(np.arange(data.shape[0]), None)
