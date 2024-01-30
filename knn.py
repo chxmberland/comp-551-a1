@@ -44,13 +44,19 @@ def euclidean_distance(r1: pd.Series, r2: pd.Series):
     v1 = np.array(r1)
     v2 = np.array(r2)
 
-    return  np.linalg.norm(v1 - v2)
+    return np.linalg.norm(v1 - v2)
+
+def manhattan_distance(r1: pd.Series, r2: pd.Series):
+    v1 = np.array(r1)
+    v2 = np.array(r2)
+
+    return np.sum(np.abs(v1 - v2))
 
 
 # This class will represent an instance of the KNN model with a static K
 class KNN:
 
-    def __init__(self, K=1, dist_fn=euclidean_distance):
+    def __init__(self, K=1, dist_fn=manhattan_distance):
 
         # Setting distance function
         self.dist_fn = dist_fn

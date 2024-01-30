@@ -45,7 +45,7 @@ nhanes = nhanes.drop(nhanes[nhanes["Fitness"] == 7].index)
 # Verify:
 nhanes["Fitness"].value_counts()
 
-# Changing classes column to integers
+# Changing classes column to integer labels
 nhanes['age_group'] = nhanes['age_group'].replace({"Adult": 0, "Senior": 1})
 print(nhanes)
 
@@ -84,8 +84,8 @@ nhanes.groupby("age_group")["Insulin"].describe()
 # Lower among seniors vs adults
 
 # Model 1: continuous variables only for simplicity
-
-nhanes_m1 = nhanes[["BMI", "Blood_glucose", "Oral", "Insulin"]]
+# Uncomment next line to reduce first dataset to only continuous variables
+nhanes = nhanes[["BMI", "age_group", "Blood_glucose", "Oral", "Insulin"]]
 
 
 
@@ -128,7 +128,7 @@ bcw[bcw.columns[len(bcw.columns) - 1]] = bcw[bcw.columns[len(bcw.columns) - 1]].
 print("\n------------ TRAINING ON DATASET ONE ------------\n")
 
 # Splitting into 10% test data,10% validation data and 90% training data
-test_x, test_y, validation_x, validation_y, train_x, train_y = split_data(nhanes, 0.1, 0.1, 1) # Labels are in column 1
+test_x, test_y, validation_x, validation_y, train_x, train_y = split_data(nhanes, 0.25, 0.25, 1) # Labels are in column 1
 print("From a total sample size of " + str(len(bcw)) 
       + ", the dataset was split into training data (" 
       + str(len(train_x)) + " samples), test data ("
@@ -138,6 +138,7 @@ print("From a total sample size of " + str(len(bcw))
 
 best_k = 0
 best_accuracy = 0
+accuracies = []
 for k in range(1, 11):
     print("\nTesting model with k value " + str(k))
 
@@ -152,6 +153,7 @@ for k in range(1, 11):
 
     # Checking the accuracy of the predictions
     new_accuracy, _ = model.evaluate_threshold_acc(probabilities, validation_y, 0.5)
+    accuracies.append(new_accuracy)
 
     print("Got accuracy of " + str(round(new_accuracy, 3)))
     
@@ -175,6 +177,15 @@ probabilities = model.predict(test_x)
 accuracy, _ = model.evaluate_threshold_acc(probabilities, test_y, 0.5)
 print("Got accuracy on test data of " + str(round(accuracy, 2)))
 
+# Plotting the accuracy of each K-value
+plt.scatter(best_k, accuracy, color='red', marker='o')
+indices = [x for x in range(1, len(accuracies) + 1)]
+plt.plot(indices, accuracies)
+plt.title('K-values vs Prediction Accuracy')
+plt.xlabel('K-value')
+plt.ylabel('Prediction Accuracy')
+plt.show()
+
 # Computing AUROC
 print("\nGetting the AUROC score.")
 
@@ -184,7 +195,7 @@ fpr, tpr, thresholds = skm.roc_curve(test_y, probabilities)
 # Compute AUC
 auc = skm.roc_auc_score(test_y, probabilities)
 
-# Plotting
+# Plotting AUROC
 plt.figure()
 plt.plot(fpr, tpr, color='blue', lw=2, label='ROC curve (area = %0.2f)' % auc)
 plt.plot([0, 1], [0, 1], color='darkgrey', linestyle='--')
@@ -206,7 +217,7 @@ print("\n------------ TRAINING ON DATASET TWO ------------\n")
 
 # Splitting into 10% test data,10% validation data and 90% training data
 print(bcw)
-test_x, test_y, validation_x, validation_y, train_x, train_y = split_data(bcw, 0.1, 0.1, bcw.shape[1] - 1) # Labels are in column 1
+test_x, test_y, validation_x, validation_y, train_x, train_y = split_data(bcw, 0.25, 0.25, bcw.shape[1] - 1) # Labels are in column 1
 print("From a total sample size of " + str(len(bcw)) 
       + ", the dataset was split into training data (" 
       + str(len(train_x)) + " samples), test data ("
@@ -216,6 +227,7 @@ print("From a total sample size of " + str(len(bcw))
 
 best_k = 0
 best_accuracy = 0
+accuracies = []
 for k in range(1, 10):
     print("\nTesting model with k value " + str(k))
 
@@ -230,6 +242,7 @@ for k in range(1, 10):
 
     # Checking the accuracy of the predictions
     new_accuracy, _ = model.evaluate_threshold_acc(probabilities, validation_y, 0.5)
+    accuracies.append(new_accuracy)
 
     print("Got accuracy of " + str(round(new_accuracy, 3)))
     
@@ -252,6 +265,15 @@ probabilities = model.predict(test_x)
 # Checking the prediction accuracy with a threshold of 0.5
 accuracy, _ = model.evaluate_threshold_acc(probabilities, test_y, 0.5)
 print("Got accuracy on test data of " + str(round(accuracy, 2)))
+
+# Plotting K-value accuracy
+plt.scatter(best_k, accuracy, color='red', marker='o')
+indices = [x for x in range(1, len(accuracies) + 1)]
+plt.plot(indices, accuracies)
+plt.title('K-values vs Prediction Accuracy')
+plt.xlabel('K-value')
+plt.ylabel('Prediction Accuracy')
+plt.show()
 
 # Computing AUROC
 print("\nGetting the AUROC score.")
