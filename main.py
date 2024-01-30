@@ -160,7 +160,7 @@ for k in range(1, 11):
         best_accuracy = new_accuracy
         best_k = k
 
-print("\nUsing k-value of " + str(k) + " on test data " + str(best_k))
+print("\nUsing k-value of " + str(best_k) + " on test data")
 
 # Testing with test data
 model = KNN(best_k)
@@ -238,7 +238,7 @@ for k in range(1, 10):
         best_accuracy = new_accuracy
         best_k = k
 
-print("\nUsing k-value of " + str(k) + " on test data " + str(best_k))
+print("\nUsing k-value of " + str(best_k) + " on test data")
 
 # Testing with test data
 model = KNN(best_k)
