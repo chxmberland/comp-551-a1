@@ -133,9 +133,9 @@ print(y_train.shape)
 
 m1_preds, m1_probs = model_1.predict(X_test)
 
-#accuracy = np.sum(m1_preds == y_test)/y_test.shape[0]
+accuracy = np.sum(m1_preds == y_test)/y_test.shape[0]
 
-#print(accuracy)
+print(accuracy)
     
 
 
