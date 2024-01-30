@@ -265,28 +265,59 @@ x_test, y_test = x[inds[train_size+validate_size:]], y[inds[train_size+validate_
 cost_functions = ["cost_misclassification", "cost_gini_index", "cost_entropy"]
 max_max_depth = 10
 
+max_accuracy_function = None
+max_accuracy_max_depth = None
+max_accuracy = None
+
 for fn in cost_functions:
     for max_depth in range(1,max_max_depth+1):
         DTmodel = DecisionTree(max_depth=max_depth, cost_fn=fn)
         DTmodel.fit(x_train, y_train)
-        predictedClassProbs = DTmodel.predict(x_test)
-        predictedClasses = []
-        for v in predictedClassProbs:
+        train_predictedClassProbs = DTmodel.predict(x_test)
+        train_predictedClasses = []
+        for v in train_predictedClassProbs:
             maxp = -1
             maxIndex = -1
             for i in range(len(v)):
                 if v[i] > maxp:
                     maxp = v[i]
                     maxIndex = i
-            predictedClasses.append(maxIndex)
+            train_predictedClasses.append(maxIndex)
 
-        accurate_preds = 0
-        for i in range(len(predictedClasses)):
-            if predictedClasses[i] == y_test[i]:
-                accurate_preds += 1
+        train_accurate_preds = 0
+        for i in range(len(train_predictedClasses)):
+            if train_predictedClasses[i] == y_test[i]:
+                train_accurate_preds += 1
 
-        accuracy = accurate_preds / len(predictedClasses)
-        print(f'ACCURACY ON DATASET ONE OF DECISION TREE WITH COST FUNCTION {fn} AND MAX DEPTH {max_depth} IS {accuracy}')
+        train_accuracy = train_accurate_preds / len(train_predictedClasses)
+        print(f'TRAIN ACCURACY ON DATASET ONE OF DECISION TREE WITH COST FUNCTION {fn} AND MAX DEPTH {max_depth} IS {train_accuracy}')
+
+        val_predictedClassProbs = DTmodel.predict(x_validate)
+        val_predictedClasses = []
+        for v in val_predictedClassProbs:
+            maxp = -1
+            maxIndex = -1
+            for i in range(len(v)):
+                if v[i] > maxp:
+                    maxp = v[i]
+                    maxIndex = i
+            val_predictedClasses.append(maxIndex)
+
+        val_accurate_preds = 0
+        for i in range(len(val_predictedClasses)):
+            if val_predictedClasses[i] == y_validate[i]:
+                val_accurate_preds += 1
+
+        val_accuracy = val_accurate_preds / len(val_predictedClasses)
+        print(f'VALIDATION ACCURACY ON DATASET ONE OF DECISION TREE WITH COST FUNCTION {fn} AND MAX DEPTH {max_depth} IS {val_accuracy}')
+
+        if max_accuracy is None or val_accuracy > max_accuracy:
+            max_accuracy_function = fn
+            max_accuracy_max_depth = max_depth
+            max_accuracy = val_accuracy
+
+print(f'BEST DECISION TREE MODEL FOR DATASET ONE HAS COST FUNCTION {max_accuracy_function} AND MAX DEPTH {max_accuracy_max_depth} WITH ACCURACY {max_accuracy}')
+
 
 print("\n----- TRAINING ON DATASET TWO -----\n")
 
@@ -315,28 +346,57 @@ x_train, y_train = x[inds[:train_size]], y[inds[:train_size]]
 x_validate, y_validate = x[inds[train_size:train_size+validate_size]], y[inds[train_size:train_size+validate_size]]
 x_test, y_test = x[inds[train_size+validate_size:]], y[inds[train_size+validate_size:]]
 
+max_accuracy_function = None
+max_accuracy_max_depth = None
+max_accuracy = None
 for fn in cost_functions:
     for max_depth in range(1,max_depth+1):
         DTmodel = DecisionTree(max_depth=max_depth, cost_fn=fn)
         DTmodel.fit(x_train, y_train)
-        predictedClassProbs = DTmodel.predict(x_test)
-        predictedClasses = []
-        for v in predictedClassProbs:
+        train_predictedClassProbs = DTmodel.predict(x_test)
+        train_predictedClasses = []
+        for v in train_predictedClassProbs:
             maxp = -1
             maxIndex = -1
             for i in range(len(v)):
                 if v[i] > maxp:
                     maxp = v[i]
                     maxIndex = i
-            predictedClasses.append(maxIndex)
+            train_predictedClasses.append(maxIndex)
 
-        accurate_preds = 0
-        for i in range(len(predictedClasses)):
-            if predictedClasses[i] == y_test[i]:
-                accurate_preds += 1
+        train_accurate_preds = 0
+        for i in range(len(train_predictedClasses)):
+            if train_predictedClasses[i] == y_test[i]:
+                train_accurate_preds += 1
 
-        accuracy = accurate_preds / len(predictedClasses)
-        print(f'ACCURACY ON DATASET TWO OF DECISION TREE WITH COST FUNCTION {fn} AND MAX DEPTH {max_depth} IS {accuracy}')
+        train_accuracy = train_accurate_preds / len(train_predictedClasses)
+        print(f'TRAIN ACCURACY ON DATASET TWO OF DECISION TREE WITH COST FUNCTION {fn} AND MAX DEPTH {max_depth} IS {train_accuracy}')
+
+        val_predictedClassProbs = DTmodel.predict(x_validate)
+        val_predictedClasses = []
+        for v in val_predictedClassProbs:
+            maxp = -1
+            maxIndex = -1
+            for i in range(len(v)):
+                if v[i] > maxp:
+                    maxp = v[i]
+                    maxIndex = i
+            val_predictedClasses.append(maxIndex)
+
+        val_accurate_preds = 0
+        for i in range(len(val_predictedClasses)):
+            if val_predictedClasses[i] == y_validate[i]:
+                val_accurate_preds += 1
+
+        val_accuracy = val_accurate_preds / len(val_predictedClasses)
+        print(f'VALIDATION ACCURACY ON DATASET TWO OF DECISION TREE WITH COST FUNCTION {fn} AND MAX DEPTH {max_depth} IS {val_accuracy}')
+
+        if max_accuracy is None or val_accuracy > max_accuracy:
+            max_accuracy_function = fn
+            max_accuracy_max_depth = max_depth
+            max_accuracy = val_accuracy
+
+print(f'BEST DECISION TREE MODEL FOR DATASET TWO HAS COST FUNCTION {max_accuracy_function} AND MAX DEPTH {max_accuracy_max_depth} WITH ACCURACY {max_accuracy}')
 
 
 #TODO: USE VALIDATION SET LIKE THEY DO IN EXAMPLE DT CODE TO PARAMETRIZE MODEL
