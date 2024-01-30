@@ -132,7 +132,7 @@ def evaluate_acc(pred_y, real_y):
 
     train_accuracy = accurate_preds / len(pred_y)
     return train_accuracy
-'''
+
 # TODO: Remove noise features
 
 # ----- TRAINING THE MODEL -----#
@@ -215,7 +215,7 @@ print(str(round(accuracy, 2)))
 #
 #
 #
-'''
+
 print("\n----- DECISION TREE SECTION -----\n")
 
 print("\n----- TRAINING ON DATASET ONE -----\n")
