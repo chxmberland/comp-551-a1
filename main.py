@@ -3,10 +3,11 @@ import numpy as np
 from knn import KNN, split_data
 
 
-# DATASET 1
-# __________________________________________
 
-### ----- Load in and clean up ----- ###
+## ------------ CLEANING: DATASET 1 ------------ ##
+
+
+
 
 nhanes = pd.read_csv("dataset1/NHANES_age_prediction.csv")
 nhanes.head()
@@ -45,8 +46,7 @@ nhanes["Fitness"].value_counts()
 nhanes['age_group'] = nhanes['age_group'].replace({"Adult": 0, "Senior": 1})
 print(nhanes)
 
-
-### ----- Summary stats ----- ###
+# Summary stats
 
 ## Gender
 print("Gender proportions by age group:")
@@ -80,26 +80,15 @@ nhanes.groupby("age_group")["Oral"].describe()
 nhanes.groupby("age_group")["Insulin"].describe()
 # Lower among seniors vs adults
 
-
-## Variables to consider in KNN:
-#
-# - Fitness (categorical -- 2 levels)
-# - BMI (cont.)
-# - Blood glucose (cont.)
-# - Diabetic (categorical -- 3 levels)
-# - Oral (cont.)
-# - Insulin (cont.)
-
-
-### ----- Apply KNN ----- ###
-
 # Model 1: continuous variables only for simplicity
 
 nhanes_m1 = nhanes[["BMI", "Blood_glucose", "Oral", "Insulin"]]
 
 
 
-## ----- DATASET 2 ----- ##
+## ------------ CLEANING DATASET 2 ------------ ##
+
+
 
 # Loading dataset
 bcw = pd.read_csv("dataset2/breast-cancer-wisconsin.csv")
@@ -120,13 +109,20 @@ bcw = bcw.apply(pd.to_numeric, errors='coerce')
 # Dropping all rows with NaN
 bcw = bcw.dropna()
 
-# TODO: Remove noise features
+# Changing all labels of 2 (benign) to 0 and 4 (malignant) to 1
+bcw[bcw.columns[len(bcw.columns) - 1]] = bcw[bcw.columns[len(bcw.columns) - 1]].apply(lambda n: 0 if n == 2 else 1 if n == 4 else n)
 
-# ----- TRAINING THE MODEL -----#
 
-# ----- TRAINING ON DATASET ONE ----- #
 
-print("\n----- TRAINING ON DATASET ONE -----\n")
+# ------------ TRAINING THE MODEL ------------#
+
+
+
+# ------------ TRAINING ON DATASET ONE ------------ #
+
+
+
+print("\n------------ TRAINING ON DATASET ONE ------------\n")
 
 # Splitting into 10% test data,10% validation data and 90% training data
 test_x, test_y, validation_x, validation_y, train_x, train_y = split_data(nhanes, 0.1, 0.1, 1) # Labels are in column 1
@@ -139,34 +135,54 @@ print("From a total sample size of " + str(len(bcw))
 
 best_k = 0
 best_accuracy = 0
-for k in range(1, 11):
+for k in range(6, 10):
     print("\nTesting model with k value " + str(k))
 
-    # Creating a new KNN model
+    # Creating a new KNN model with a new K
     model = KNN(k)
+
+    # Training the model on the training data (memorizing)
     model.fit(train_x, train_y)
-    new_accuracy = model.predict(validation_x, validation_y) # Predict using validation data
-    print("Got efficacy of " + str(round(new_accuracy, 3)))
+
+    # Deriving the probabilities each data point has a positive label (validation stage)
+    probabilities = model.predict(validation_x)
+
+    # Checking the accuracy of the predictions
+    new_accuracy = model.get_pred_accuracy(probabilities, validation_y, 0.5)
+
+    print("Got accuracy of " + str(round(new_accuracy, 3)))
     
     # Setting k and accuracy variables
     if new_accuracy > best_accuracy:
         best_accuracy = new_accuracy
         best_k = k
 
-print("\nUsing k-value on test data " + str(best_k))
+print("\nUsing k-value of " + str(k) + " on test data " + str(best_k))
 
 # Testing with test data
 model = KNN(best_k)
+
+# Training the model
 model.fit(train_x, train_y)
-accuracy = model.predict(test_x, test_y) # Predicting with test data
-print(str(round(accuracy, 2)))
 
-# ----- TRAINING DATASET TWO ----- #
+# Predicting labels
+probabilities = model.predict(test_x)
 
-print("\n----- TRAINING ON DATASET TWO -----\n")
+# Checking the prediction accuracy with a threshold of 0.5
+accuracy = model.get_pred_accuracy(probabilities, test_y, 0.5)
+print("Got accuracy on test data of " + str(round(accuracy, 2)))
+
+
+
+# ------------ TRAINING DATASET TWO ------------ #
+
+
+
+print("\n------------ TRAINING ON DATASET TWO ------------\n")
 
 # Splitting into 10% test data,10% validation data and 90% training data
-test_x, test_y, validation_x, validation_y, train_x, train_y = split_data(bcw, 0.1, 0.1, bcw.shape[1] - 1)
+print(bcw)
+test_x, test_y, validation_x, validation_y, train_x, train_y = split_data(bcw, 0.1, 0.1, bcw.shape[1] - 1) # Labels are in column 1
 print("From a total sample size of " + str(len(bcw)) 
       + ", the dataset was split into training data (" 
       + str(len(train_x)) + " samples), test data ("
@@ -176,24 +192,39 @@ print("From a total sample size of " + str(len(bcw))
 
 best_k = 0
 best_accuracy = 0
-for k in range(1, 11):
+for k in range(1, 10):
     print("\nTesting model with k value " + str(k))
 
-    # Creating a new KNN model
+    # Creating a new KNN model with a new K
     model = KNN(k)
+
+    # Training the model on the training data (memorizing)
     model.fit(train_x, train_y)
-    new_accuracy = model.predict(validation_x, validation_y) # Predict using validation data
-    print("Got efficacy of " + str(round(new_accuracy, 3)))
+
+    # Deriving the probabilities each data point has a positive label (validation stage)
+    probabilities = model.predict(validation_x)
+
+    # Checking the accuracy of the predictions
+    new_accuracy = model.get_pred_accuracy(probabilities, validation_y, 0.5)
+
+    print("Got accuracy of " + str(round(new_accuracy, 3)))
     
     # Setting k and accuracy variables
     if new_accuracy > best_accuracy:
         best_accuracy = new_accuracy
         best_k = k
 
-print("\nUsing k-value on test data " + str(best_k))
+print("\nUsing k-value of " + str(k) + " on test data " + str(best_k))
 
 # Testing with test data
 model = KNN(best_k)
+
+# Training the model
 model.fit(train_x, train_y)
-accuracy = model.predict(test_x, test_y) # Predicting with test data
-print(str(round(accuracy, 2)))
+
+# Predicting labels
+probabilities = model.predict(test_x)
+
+# Checking the prediction accuracy with a threshold of 0.5
+accuracy = model.get_pred_accuracy(probabilities, test_y, 0.5)
+print("Got accuracy on test data of " + str(round(accuracy, 2)))
