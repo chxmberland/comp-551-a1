@@ -223,34 +223,15 @@ print("\n----- TRAINING ON DATASET ONE -----\n")
 dataset_size = nhanes.shape[0]
 num_cols = nhanes.shape[1]
 nhanes = og_nhanes.to_numpy()
-'''
-#replace 'male' and 'female' with 0 and 1 respectively
-nhanes[:, 1] = np.where(nhanes[:, 1].astype(str) == 'Adult', 0, 1).astype(int)'''
+
 #change float col to int
 nhanes[:, 5] *= 10#.astype(int)
 nhanes[:, -1] *= 100#.astype(int)
 
-#change all cols to int
 for col in range(num_cols):
-    #if col == 1 or col == num_cols - 1:
-    #    continue
-    #else:
     nhanes[:, col] = (nhanes[:, col]).astype(int)
 
-#c = 0
-#for i in range(num_cols):
-#    for j in range(dataset_size):
-#        if type(nhanes[j,i]) != int:
-#            print(type(nhanes[j,i]))
-#            c += 1
-
-    #print(type(nhanes[0,i]))
-#bcw.set_index(pd.Index([i for i in range(bcw.shape[0])]))
 inds = np.random.permutation(dataset_size)
-'''test_proportion = 0.25
-test_size = int(test_proportion*dataset_size)
-train_size = dataset_size-test_size
-'''
 test_proportion = 0.25
 validate_proportion = 0.25
 test_size = int(test_proportion*dataset_size)
@@ -265,13 +246,6 @@ want_to_select[1] = False
 want_to_select[2] = False
 x, y = nhanes[:,np.array(want_to_select)], nhanes[:,1]
 
-print(x.shape)
-
-'''x_train, y_train = x[inds[:train_size]], y[inds[:train_size]]
-x_test, y_test = x[inds[train_size:]], y[inds[train_size:]]'''
-
-print(x)
-print(y) 
 x_train, y_train = x[inds[:train_size]], y[inds[:train_size]]
 x_validate, y_validate = x[inds[train_size:train_size+validate_size]], y[inds[train_size:train_size+validate_size]]
 x_test, y_test = x[inds[train_size+validate_size:]], y[inds[train_size+validate_size:]]
