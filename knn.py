@@ -6,6 +6,12 @@ import numpy as np
 # Returns a tuple containing the test data (at index 0) and the training data
 def split_data(dataset: pd.DataFrame, test_percentage: float, validation_percentage: float, label_column: int):
 
+    # Normalizing all data
+    for c in dataset.columns:
+        mean = dataset[c].mean() 
+        std = dataset[c].std()
+        dataset[c].apply(lambda x: (x - mean) / std) # Plus constant to avoid division by zero
+
     # Shuffling the rows of the dataframe
     shuffled_df = dataset.sample(frac=1).reset_index(drop=True)
 
@@ -91,7 +97,7 @@ class KNN:
 
 
     # Predicts the label of a point given a list of IDs of the nearest neighbors to that point
-    def get_weighted_label(self, nearest_neighbors: list[tuple]):
+    def get_weighted_label(self, nearest_neighbors: list[tuple]) -> float:
         total_weight = 0
         pos_weight = 0
 
@@ -112,8 +118,9 @@ class KNN:
     
 
     # Gets the prediction accuracy of the KNN model with an integer threshold
-    def get_pred_accuracy(self, probabilities: list[int], actual_labels: np.ndarray, pos_threshold: int):
+    def evaluate_threshold_acc(self, probabilities: list[float], actual_labels: list[int], pos_threshold: float) -> (float, list[int]):
         correct_predictions = 0
+        predictions = []
 
         # Looping through each prediction and comparing it to the threshold
         for i in range(0, len(probabilities)):
@@ -123,11 +130,24 @@ class KNN:
             actual = actual_labels[i]
             label_prediction = 0 if probability < pos_threshold else 1
 
+            # Tracking the labels that are guessed
+            predictions.append(label_prediction)
+
             # Checking to see if the prediction was correct
             if actual == label_prediction:
                 correct_predictions += 1
 
         # Returning the proportion of correct predictions
-        return correct_predictions / actual_labels.size
+        predict_acc = correct_predictions / actual_labels.size
+        return (predict_acc, predictions)
 
+    def evaluate_acc(self, guesses: list[int], actual: list[int]) -> float:
+        correct_guesses = 0
+
+        # Loop through each guess and compare it to the actual label
+        for i in range(guesses):
             
+            if guesses[i] == actual[i]:
+                correct_guesses += 1
+
+        return round(correct_guesses / len(guesses), 5)

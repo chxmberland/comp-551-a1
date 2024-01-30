@@ -138,7 +138,7 @@ print("From a total sample size of " + str(len(bcw))
 
 best_k = 0
 best_accuracy = 0
-for k in range(6, 10):
+for k in range(1, 11):
     print("\nTesting model with k value " + str(k))
 
     # Creating a new KNN model with a new K
@@ -151,7 +151,7 @@ for k in range(6, 10):
     probabilities = model.predict(validation_x)
 
     # Checking the accuracy of the predictions
-    new_accuracy = model.get_pred_accuracy(probabilities, validation_y, 0.5)
+    new_accuracy, _ = model.evaluate_threshold_acc(probabilities, validation_y, 0.5)
 
     print("Got accuracy of " + str(round(new_accuracy, 3)))
     
@@ -172,11 +172,11 @@ model.fit(train_x, train_y)
 probabilities = model.predict(test_x)
 
 # Checking the prediction accuracy with a threshold of 0.5
-accuracy = model.get_pred_accuracy(probabilities, test_y, 0.5)
+accuracy, _ = model.evaluate_threshold_acc(probabilities, test_y, 0.5)
 print("Got accuracy on test data of " + str(round(accuracy, 2)))
 
 # Computing AUROC
-print("Getting the AUROC score.")
+print("\nGetting the AUROC score.")
 
 # Compute ROC curve
 fpr, tpr, thresholds = skm.roc_curve(test_y, probabilities)
@@ -229,7 +229,7 @@ for k in range(1, 10):
     probabilities = model.predict(validation_x)
 
     # Checking the accuracy of the predictions
-    new_accuracy = model.get_pred_accuracy(probabilities, validation_y, 0.5)
+    new_accuracy, _ = model.evaluate_threshold_acc(probabilities, validation_y, 0.5)
 
     print("Got accuracy of " + str(round(new_accuracy, 3)))
     
@@ -250,13 +250,11 @@ model.fit(train_x, train_y)
 probabilities = model.predict(test_x)
 
 # Checking the prediction accuracy with a threshold of 0.5
-accuracy = model.get_pred_accuracy(probabilities, test_y, 0.5)
+accuracy, _ = model.evaluate_threshold_acc(probabilities, test_y, 0.5)
 print("Got accuracy on test data of " + str(round(accuracy, 2)))
 
 # Computing AUROC
-print("Getting the AUROC score.")
-
-# Compute ROC curve
+print("\nGetting the AUROC score.")
 fpr, tpr, thresholds = skm.roc_curve(test_y, probabilities)
 
 # Compute AUC
