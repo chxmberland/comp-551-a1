@@ -46,7 +46,7 @@ nhanes["Fitness"].value_counts()
 # Changing classes column to integers
 nhanes['age_group'] = nhanes['age_group'].replace({"Adult": 0, "Senior": 1})
 print(nhanes)
-
+og_nhanes = nhanes
 
 ### ----- Summary stats ----- ###
 
@@ -213,46 +213,28 @@ print("\n----- TRAINING ON DATASET ONE -----\n")
 
 dataset_size = nhanes.shape[0]
 num_cols = nhanes.shape[1]
-#NEED TO FIGURE OUT HOW 
-nhanes = nhanes.to_numpy()
+nhanes = og_nhanes.to_numpy()
 
-#replace 'male' and 'female' with 0 and 1 respectively
-nhanes[:, 1] = np.where(nhanes[:, 1].astype(str) == 'Adult', 0, 1).astype(int)
 #change float col to int
-nhanes[:, -1] = (nhanes[:, -1] * 100).astype(int)
+nhanes[:, 5] *= 10#.astype(int)
+nhanes[:, -1] *= 100#.astype(int)
 
-
-#change all cols to int
 for col in range(num_cols):
-    if col == 1 or col == num_cols - 1:
-        continue
-    else:
-        nhanes[:, col] = (nhanes[:, col]).astype(int)
+    nhanes[:, col] = (nhanes[:, col]).astype(int)
 
-
-c = 0
-#for i in range(num_cols):
-#    for j in range(dataset_size):
-#        if type(nhanes[j,i]) != int:
-#            print(type(nhanes[j,i]))
-#            c += 1
-
-    #print(type(nhanes[0,i]))
-#bcw.set_index(pd.Index([i for i in range(bcw.shape[0])]))
 inds = np.random.permutation(dataset_size)
 test_proportion = 0.25
+validate_proportion = 0.25
 test_size = int(test_proportion*dataset_size)
-train_size = dataset_size-test_size
-#print(train_size, test_size)
-'''x, y = bcw.iloc[:,:-1], bcw.iloc[:,-1]
+validate_size = int(validate_proportion*dataset_size)
+train_size = dataset_size-test_size-validate_size
 
-x_train, y_train = x.iloc[inds[:train_size],:], y.iloc[inds[:train_size]]
-x_test, y_test = x.iloc[inds[train_size:],:], y.iloc[inds[train_size:]]'''
 
 want_to_select = [True for _ in range(num_cols)]
 #remove ID and age label from X features
 want_to_select[0] = False
 want_to_select[1] = False
+want_to_select[2] = False
 x, y = nhanes[:,np.array(want_to_select)], nhanes[:,1]
 
 x_train, y_train = x[inds[:train_size]], y[inds[:train_size]]
@@ -262,29 +244,50 @@ x_test, y_test = x[inds[train_size:]], y[inds[train_size:]]
 #print(x_train, y_train)
 #print(x_test, y_test)
 
-DTmodel = DecisionTree()
-DTmodel.fit(x_train, y_train)
-predictedClassProbs = DTmodel.predict(x_test)
-#print(predictedClassProbs)
-predictedClasses = []
-for v in predictedClassProbs:
-    maxp = -1
-    maxIndex = -1
-    for i in range(len(v)):
-        if v[i] > maxp:
-            maxp = v[i]
-            maxIndex = i
-    predictedClasses.append(maxIndex)
+for fn in cost_functions:
+    for max_depth in range(1,max_max_depth+1):
+        DTmodel = DecisionTree(max_depth=max_depth, cost_fn=fn)
+        DTmodel.fit(x_train, y_train)
+        train_predictedClassProbs = DTmodel.predict(x_test)
+        train_predictedClasses = []
+        for v in train_predictedClassProbs:
+            maxp = -1
+            maxIndex = -1
+            for i in range(len(v)):
+                if v[i] > maxp:
+                    maxp = v[i]
+                    maxIndex = i
+            train_predictedClasses.append(maxIndex)
+        
+        train_accurate_preds = 0
+        for i in range(len(train_predictedClasses)):
+            if train_predictedClasses[i] == y_test[i]:
+                train_accurate_preds += 1
 
-#print(predictedClasses)
+        train_accuracy = train_accurate_preds / len(train_predictedClasses)
+        #print(f'TRAIN ACCURACY ON DATASET ONE OF DECISION TREE WITH COST FUNCTION {fn} AND MAX DEPTH {max_depth} IS {train_accuracy}')
 
-accurate_preds = 0
-for i in range(len(predictedClasses)):
-    if predictedClasses[i] == y_test[i]:
-        accurate_preds += 1
+        val_predictedClassProbs = DTmodel.predict(x_validate)
+        val_predictedClasses = []
+        for v in val_predictedClassProbs:
+            maxp = -1
+            maxIndex = -1
+            for i in range(len(v)):
+                if v[i] > maxp:
+                    maxp = v[i]
+                    maxIndex = i
+            val_predictedClasses.append(maxIndex)
 
-accuracy = accurate_preds / len(predictedClasses)
-print(f'ACCURACY ON DATASET ONE OF DECISION TREE IS {accuracy}')
+        val_accuracy = evaluate_acc(val_predictedClasses, y_validate)
+        #print(f'VALIDATION ACCURACY ON DATASET ONE OF DECISION TREE WITH COST FUNCTION {fn} AND MAX DEPTH {max_depth} IS {val_accuracy}')
+
+        if max_accuracy is None or val_accuracy > max_accuracy:
+            max_accuracy_function = fn
+            max_accuracy_max_depth = max_depth
+            max_accuracy = val_accuracy
+
+print(f'BEST DECISION TREE MODEL FOR DATASET ONE HAS COST FUNCTION {max_accuracy_function} AND MAX DEPTH {max_accuracy_max_depth} WITH ACCURACY {max_accuracy}')
+
 
 print("\n----- TRAINING ON DATASET TWO -----\n")
 #print(bcw)
