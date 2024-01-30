@@ -139,21 +139,6 @@ class DecisionTree:
         #assign the left and right child to present child
         node.left = left
         node.right = right
-
-    #old returning class probs
-    '''def predict(self, data_test):
-        class_probs = np.zeros((data_test.shape[0], self.num_classes))
-        for n, x in enumerate(data_test):
-            node = self.root
-            #loop along the dept of the tree looking region where the present data sample fall in based on the split feature and value
-            while node.left:
-                if x[node.split_feature] <= node.split_value:
-                    node = node.left
-                else:
-                    node = node.right
-            #the loop terminates when you reach a leaf of the tree and the class probability of that node is taken for prediction
-            class_probs[n,:] = node.class_prob
-        return class_probs'''
     
     def predict(self, data_test):
         class_probs = np.zeros((data_test.shape[0], self.num_classes))
@@ -171,5 +156,27 @@ class DecisionTree:
             #class_probs.append(node.class_prob)
         return class_probs
     
-    
+    # Gets the prediction accuracy of the KNN model with an integer threshold
+    def evaluate_threshold_acc(self, probabilities: list[float], actual_labels: list[int], pos_threshold: float) -> (float, list[int]):
+        correct_predictions = 0
+        predictions = []
+
+        # Looping through each prediction and comparing it to the threshold
+        for i in range(0, len(probabilities)):
+
+            # Comparing prediction using the threshold
+            probability = probabilities[i]
+            actual = actual_labels[i]
+            label_prediction = 0 if probability < pos_threshold else 1
+
+            # Tracking the labels that are guessed
+            predictions.append(label_prediction)
+
+            # Checking to see if the prediction was correct
+            if actual == label_prediction:
+                correct_predictions += 1
+
+        # Returning the proportion of correct predictions
+        predict_acc = correct_predictions / actual_labels.size
+        return (predict_acc, predictions)
 

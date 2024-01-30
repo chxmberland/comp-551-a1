@@ -3,7 +3,8 @@ import numpy as np
 from knn import KNN, split_data
 from dt import DecisionTree
 from sklearn.model_selection import train_test_split
-
+from sklearn import metrics as skm
+import matplotlib.pyplot as plt
 
 # DATASET 1
 # __________________________________________
@@ -138,7 +139,7 @@ def evaluate_acc(pred_y, real_y):
 # ----- TRAINING THE MODEL -----#
 
 # ----- TRAINING ON DATASET ONE ----- #
-
+'''
 print("\n----- TRAINING ON DATASET ONE -----\n")
 
 # Splitting into 10% test data,10% validation data and 90% training data
@@ -210,13 +211,16 @@ model = KNN(best_k)
 model.fit(train_x, train_y)
 accuracy = model.predict(test_x, test_y) # Predicting with test data
 print(str(round(accuracy, 2)))
-
+'''
 #DECISION TREE
 #
 #
 #
 
 print("\n----- DECISION TREE SECTION -----\n")
+
+cost_functions = ["cost_misclassification", "cost_gini_index", "cost_entropy"]
+max_max_depth = 10
 
 print("\n----- TRAINING ON DATASET ONE -----\n")
 
@@ -249,9 +253,6 @@ x, y = nhanes[:,np.array(want_to_select)], nhanes[:,1]
 x_train, y_train = x[inds[:train_size]], y[inds[:train_size]]
 x_validate, y_validate = x[inds[train_size:train_size+validate_size]], y[inds[train_size:train_size+validate_size]]
 x_test, y_test = x[inds[train_size+validate_size:]], y[inds[train_size+validate_size:]]
-
-cost_functions = ["cost_misclassification", "cost_gini_index", "cost_entropy"]
-max_max_depth = 10
 
 max_accuracy_function = None
 max_accuracy_max_depth = None
@@ -303,11 +304,48 @@ for fn in cost_functions:
 
 print(f'BEST DECISION TREE MODEL FOR DATASET ONE HAS COST FUNCTION {max_accuracy_function} AND MAX DEPTH {max_accuracy_max_depth} WITH ACCURACY {max_accuracy}')
 
+# Testing with test data
+model = DecisionTree(max_depth=max_accuracy_max_depth, cost_fn=max_accuracy_function)
+
+# Training the model
+model.fit(x_train, y_train)
+
+# Predicting labels
+probabilities = [x[1] for x in model.predict(x_test)]
+
+# Checking the prediction accuracy with a threshold of 0.5
+accuracy, _ = model.evaluate_threshold_acc(probabilities, y_test, 0.5)
+print("Got accuracy on test data of " + str(round(accuracy, 2)))
+
+# Computing AUROC
+print("\nGetting the AUROC score.")
+fpr, tpr, thresholds = skm.roc_curve(y_test, probabilities)
+# Compute AUC
+auc = skm.roc_auc_score(y_test, probabilities)
+
+# Plotting
+plt.figure()
+plt.plot(fpr, tpr, color='blue', lw=2, label='ROC curve (area = %0.2f)' % auc)
+plt.plot([0, 1], [0, 1], color='darkgrey', linestyle='--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver Operating Characteristic Example')
+plt.legend(loc="lower right")
+plt.show()
 
 print("\n----- TRAINING ON DATASET TWO -----\n")
 
 dataset_size = bcw.shape[0]
+num_cols = bcw.shape[1]
 bcw = bcw.to_numpy().astype(int)
+for i in range(dataset_size):
+    for j in range(num_cols):
+        if bcw[i, j] == 2:
+            bcw[i, j] = 0
+        elif bcw[i, j] == 4:
+            bcw[i,j] = 1
 
 inds = np.random.permutation(dataset_size)
 '''test_proportion = 0.25
@@ -335,7 +373,7 @@ max_accuracy_function = None
 max_accuracy_max_depth = None
 max_accuracy = None
 for fn in cost_functions:
-    for max_depth in range(1,max_depth+1):
+    for max_depth in range(1,max_max_depth+1):
         DTmodel = DecisionTree(max_depth=max_depth, cost_fn=fn)
         DTmodel.fit(x_train, y_train)
         train_predictedClassProbs = DTmodel.predict(x_test)
@@ -378,5 +416,34 @@ for fn in cost_functions:
 
 print(f'BEST DECISION TREE MODEL FOR DATASET TWO HAS COST FUNCTION {max_accuracy_function} AND MAX DEPTH {max_accuracy_max_depth} WITH ACCURACY {max_accuracy}')
 
+# Testing with test data
+model = DecisionTree(max_depth=max_accuracy_max_depth, cost_fn=max_accuracy_function)
 
-#TODO: USE VALIDATION SET LIKE THEY DO IN EXAMPLE DT CODE TO PARAMETRIZE MODEL
+# Training the model
+model.fit(x_train, y_train)
+
+# Predicting labels
+probabilities = [x[1] for x in model.predict(x_test)]
+
+# Checking the prediction accuracy with a threshold of 0.5
+accuracy, _ = model.evaluate_threshold_acc(probabilities, y_test, 0.5)
+print("Got accuracy on test data of " + str(round(accuracy, 2)))
+
+# Computing AUROC
+print("\nGetting the AUROC score.")
+fpr, tpr, thresholds = skm.roc_curve(y_test, probabilities)
+
+# Compute AUC
+auc = skm.roc_auc_score(y_test, probabilities)
+
+# Plotting
+plt.figure()
+plt.plot(fpr, tpr, color='blue', lw=2, label='ROC curve (area = %0.2f)' % auc)
+plt.plot([0, 1], [0, 1], color='darkgrey', linestyle='--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver Operating Characteristic Example')
+plt.legend(loc="lower right")
+plt.show()
