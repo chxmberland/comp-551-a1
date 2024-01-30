@@ -117,6 +117,11 @@ print("Validation target array dimensions:", y_valid.shape, "\n")
 print("Test features array dimensions:", X_test.shape)
 print("Test target array dimensions:", y_test.shape, "\n")
 
+X_test = X_test.reset_index(drop=True)
+y_test = y_test.reset_index(drop=True)
+
+X_train = X_train.reset_index(drop=True)
+y_train = y_train.reset_index(drop=True)
 
 ## Step 2: Tuning hyperparameter for KNN (testing for K)
 
@@ -127,6 +132,12 @@ model_1.fit(X_train, y_train)
 print(y_train.shape)
 
 m1_preds, m1_probs = model_1.predict(X_test)
+
+#accuracy = np.sum(m1_preds == y_test)/y_test.shape[0]
+
+#print(accuracy)
     
+
+
 
 
