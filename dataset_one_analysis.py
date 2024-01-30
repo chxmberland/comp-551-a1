@@ -137,6 +137,9 @@ accuracy = np.sum(m1_preds == y_test)/y_test.shape[0]
 
 print(accuracy)
     
+print(m1_probs[:10])
+print(m1_preds[:10])
+print(y_test[:10])
 
 
 
