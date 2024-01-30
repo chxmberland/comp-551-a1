@@ -138,7 +138,7 @@ def evaluate_acc(pred_y, real_y):
 # ----- TRAINING THE MODEL -----#
 
 # ----- TRAINING ON DATASET ONE ----- #
-'''
+
 print("\n----- TRAINING ON DATASET ONE -----\n")
 
 # Splitting into 10% test data,10% validation data and 90% training data
@@ -215,7 +215,7 @@ print(str(round(accuracy, 2)))
 #
 #
 #
-'''
+
 print("\n----- DECISION TREE SECTION -----\n")
 
 print("\n----- TRAINING ON DATASET ONE -----\n")
