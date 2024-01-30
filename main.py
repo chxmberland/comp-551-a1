@@ -122,6 +122,17 @@ bcw = bcw.apply(pd.to_numeric, errors='coerce')
 # Dropping all rows with NaN
 bcw = bcw.dropna()
 
+
+#util functions
+def evaluate_acc(pred_y, real_y):
+    accurate_preds = 0
+    for i in range(len(pred_y)):
+        if pred_y[i] == real_y[i]:
+            accurate_preds += 1
+
+    train_accuracy = accurate_preds / len(pred_y)
+    return train_accuracy
+
 # TODO: Remove noise features
 
 # ----- TRAINING THE MODEL -----#
@@ -290,7 +301,7 @@ for fn in cost_functions:
                 train_accurate_preds += 1
 
         train_accuracy = train_accurate_preds / len(train_predictedClasses)
-        print(f'TRAIN ACCURACY ON DATASET ONE OF DECISION TREE WITH COST FUNCTION {fn} AND MAX DEPTH {max_depth} IS {train_accuracy}')
+        #print(f'TRAIN ACCURACY ON DATASET ONE OF DECISION TREE WITH COST FUNCTION {fn} AND MAX DEPTH {max_depth} IS {train_accuracy}')
 
         val_predictedClassProbs = DTmodel.predict(x_validate)
         val_predictedClasses = []
@@ -303,13 +314,8 @@ for fn in cost_functions:
                     maxIndex = i
             val_predictedClasses.append(maxIndex)
 
-        val_accurate_preds = 0
-        for i in range(len(val_predictedClasses)):
-            if val_predictedClasses[i] == y_validate[i]:
-                val_accurate_preds += 1
-
-        val_accuracy = val_accurate_preds / len(val_predictedClasses)
-        print(f'VALIDATION ACCURACY ON DATASET ONE OF DECISION TREE WITH COST FUNCTION {fn} AND MAX DEPTH {max_depth} IS {val_accuracy}')
+        val_accuracy = evaluate_acc(val_predictedClasses, y_validate)
+        #print(f'VALIDATION ACCURACY ON DATASET ONE OF DECISION TREE WITH COST FUNCTION {fn} AND MAX DEPTH {max_depth} IS {val_accuracy}')
 
         if max_accuracy is None or val_accuracy > max_accuracy:
             max_accuracy_function = fn
@@ -370,7 +376,7 @@ for fn in cost_functions:
                 train_accurate_preds += 1
 
         train_accuracy = train_accurate_preds / len(train_predictedClasses)
-        print(f'TRAIN ACCURACY ON DATASET TWO OF DECISION TREE WITH COST FUNCTION {fn} AND MAX DEPTH {max_depth} IS {train_accuracy}')
+        #print(f'TRAIN ACCURACY ON DATASET TWO OF DECISION TREE WITH COST FUNCTION {fn} AND MAX DEPTH {max_depth} IS {train_accuracy}')
 
         val_predictedClassProbs = DTmodel.predict(x_validate)
         val_predictedClasses = []
@@ -383,13 +389,8 @@ for fn in cost_functions:
                     maxIndex = i
             val_predictedClasses.append(maxIndex)
 
-        val_accurate_preds = 0
-        for i in range(len(val_predictedClasses)):
-            if val_predictedClasses[i] == y_validate[i]:
-                val_accurate_preds += 1
-
-        val_accuracy = val_accurate_preds / len(val_predictedClasses)
-        print(f'VALIDATION ACCURACY ON DATASET TWO OF DECISION TREE WITH COST FUNCTION {fn} AND MAX DEPTH {max_depth} IS {val_accuracy}')
+        val_accuracy = evaluate_acc(val_predictedClasses, y_validate)
+        #print(f'VALIDATION ACCURACY ON DATASET TWO OF DECISION TREE WITH COST FUNCTION {fn} AND MAX DEPTH {max_depth} IS {val_accuracy}')
 
         if max_accuracy is None or val_accuracy > max_accuracy:
             max_accuracy_function = fn
