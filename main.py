@@ -1,5 +1,8 @@
 import pandas as pd
 import numpy as np
+from sklearn import metrics as skm
+import matplotlib.pyplot as plt
+
 from knn import KNN, split_data
 
 
@@ -172,6 +175,27 @@ probabilities = model.predict(test_x)
 accuracy = model.get_pred_accuracy(probabilities, test_y, 0.5)
 print("Got accuracy on test data of " + str(round(accuracy, 2)))
 
+# Computing AUROC
+print("Getting the AUROC score.")
+
+# Compute ROC curve
+fpr, tpr, thresholds = skm.roc_curve(test_y, probabilities)
+
+# Compute AUC
+auc = skm.roc_auc_score(test_y, probabilities)
+
+# Plotting
+plt.figure()
+plt.plot(fpr, tpr, color='blue', lw=2, label='ROC curve (area = %0.2f)' % auc)
+plt.plot([0, 1], [0, 1], color='darkgrey', linestyle='--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver Operating Characteristic Example')
+plt.legend(loc="lower right")
+plt.show()
+
 
 
 # ------------ TRAINING DATASET TWO ------------ #
@@ -228,3 +252,24 @@ probabilities = model.predict(test_x)
 # Checking the prediction accuracy with a threshold of 0.5
 accuracy = model.get_pred_accuracy(probabilities, test_y, 0.5)
 print("Got accuracy on test data of " + str(round(accuracy, 2)))
+
+# Computing AUROC
+print("Getting the AUROC score.")
+
+# Compute ROC curve
+fpr, tpr, thresholds = skm.roc_curve(test_y, probabilities)
+
+# Compute AUC
+auc = skm.roc_auc_score(test_y, probabilities)
+
+# Plotting
+plt.figure()
+plt.plot(fpr, tpr, color='blue', lw=2, label='ROC curve (area = %0.2f)' % auc)
+plt.plot([0, 1], [0, 1], color='darkgrey', linestyle='--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver Operating Characteristic Example')
+plt.legend(loc="lower right")
+plt.show()
