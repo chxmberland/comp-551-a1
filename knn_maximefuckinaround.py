@@ -3,9 +3,6 @@ import numpy as np
 
 # Finds the euclidean distance between two rows in a Pandas DataFrame.
 # It treats the values in each column of the rows as a point in a dimension in space.
-#
-# NOTE: This function assumes all of the values of a row are numeric and treats the 
-# rows like vectors in order to find the distance.
 def euclidean_distance(r1: pd.Series, r2: pd.Series):
     v1 = np.array(r1)
     v2 = np.array(r2)
@@ -16,22 +13,19 @@ def euclidean_distance(r1: pd.Series, r2: pd.Series):
 # This class will represent an instance of the KNN model with a static K
 class KNN:
 
-
     def __init__(self, K = 1, dist_fn = euclidean_distance):
         self.dist_fn = dist_fn
         self.K = K
-
 
     # Memorizes the data
     def fit(self, training_features, training_target):
         self.x = training_features
         self.y = training_target
 
-
-    # Predicts the labels of samples in the test dataset and returns a percentage accuracy
+    # Predicts the labels of samples in the test dataset and returns them as a list
     def predict(self, test_data: pd.DataFrame) -> list:
 
-        predictions = []
+        predictions = pred_probs = []
 
         # Looping through each point in the test dataset
         for i in range(0, len(test_data)):
@@ -53,32 +47,29 @@ class KNN:
             nearest_neighbors = sorted(neighbors.items(), key=lambda x: x[1])[:self.K] # sorted list of tuples
             nearest_neighbors = [x[0] for x in  nearest_neighbors] # List containing only indexes of nearest neighbors
 
-            # Getting the predicted label for the new point
-            pred_label = self.get_weighted_label(nearest_neighbors)
+            pred_classes = [self.y[i] for i in nearest_neighbors]
 
-            # Checking to see if predicted label is correct
-            if pred_label == int(test_row.iloc[-1]):
-                correct_predictions += 1
+            class_probs = pd.Series(pred_classes).value_counts(normalize = True)
 
-        #
-        return predictions
+            # Getting the predicted label for the new points
+            predictions.append(class_probs.index.to_list()[0])
+
+            pred_probs.append(class_probs[1])
+
+        return predictions, pred_probs
+
+    
 
 
-    # Predicts the label of a point given a list of IDs of the nearest neighbors to that point
-    # NOTE: Assumes labels are the last value in the row
-    def get_weighted_label(self, nearest_neighbors: list):
-        label_votes = {}
 
-        # Counting the labels for each
-        for i in nearest_neighbors:
-            r = self.training_data.iloc[i]
-            label = r.iloc[-1] # Label value
-            
-            # Adding label vote to the dictionary
-            if label_votes.__contains__(label):
-                label_votes[label] = label_votes[label] + 1
-            else:
-                label_votes[label] = 1
 
-        # Returning the label with the most votes (sorted in ascending order)
-        return sorted(label_votes.items(), key=lambda x: x[1])[-1][0]
+
+c = [1, 2, 1,1, 2, 1]
+test = pd.Series(c).value_counts(normalize=True)
+
+test.index.to_list()
+
+test[1]
+
+
+accuracy = np.sum(predictions == y_test)/y_test.shape[0]
