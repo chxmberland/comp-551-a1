@@ -23,21 +23,24 @@ class KNN:
         self.y = training_target
 
     # Predicts the labels of samples in the test dataset and returns them as a list
-    def predict(self, test_data: pd.DataFrame) -> list:
+    def predict(self, test_data) -> list:
 
-        predictions = pred_probs = []
+        predictions = []
+        pred_probs = []
+
+        print("Testing data shap:", test_data.shape)
 
         # Looping through each point in the test dataset
         for i in range(0, len(test_data)):
-            test_row = test_data.iloc[i]
+            test_row = test_data[i]
 
             # Dictionary to hold the distances to each other point
             neighbors = {}
 
             # Getting the distance between current test point and all training points
             # j being the index of each training row
-            for j in range(0, len(self.training_data)):
-                train_row = self.training_data.iloc[j]
+            for j in range(0, len(self.x)):
+                train_row = self.x[j]
 
                 # Taking the rows to find the distance between the two
                 dist = self.dist_fn(test_row, train_row)
@@ -47,6 +50,8 @@ class KNN:
             nearest_neighbors = sorted(neighbors.items(), key=lambda x: x[1])[:self.K] # sorted list of tuples
             nearest_neighbors = [x[0] for x in  nearest_neighbors] # List containing only indexes of nearest neighbors
 
+            print("self.y.shape = ", self.y.shape)
+
             pred_classes = [self.y[i] for i in nearest_neighbors]
 
             class_probs = pd.Series(pred_classes).value_counts(normalize = True)
@@ -54,22 +59,10 @@ class KNN:
             # Getting the predicted label for the new points
             predictions.append(class_probs.index.to_list()[0])
 
-            pred_probs.append(class_probs[1])
+            pred_probs.append(class_probs.iloc[0])
 
         return predictions, pred_probs
 
-    
 
 
-
-
-
-c = [1, 2, 1,1, 2, 1]
-test = pd.Series(c).value_counts(normalize=True)
-
-test.index.to_list()
-
-test[1]
-
-
-accuracy = np.sum(predictions == y_test)/y_test.shape[0]
+#accuracy = np.sum(predictions == y_test)/y_test.shape[0]

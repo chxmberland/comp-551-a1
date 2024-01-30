@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
-from knn import KNN, split_data, euclidean_distance
 from sklearn.model_selection import train_test_split
+from knn_maximefuckinaround import KNN, euclidean_distance
 
 
 # DATASET 1
@@ -120,11 +120,13 @@ print("Test target array dimensions:", y_test.shape, "\n")
 
 ## Step 2: Tuning hyperparameter for KNN (testing for K)
 
-k_values = []
-k_accuracy = []
+model_1 = KNN(K = 5)
 
-for k in range(1,15):
-    knn = KNN(K = k)
+model_1.fit(X_train, y_train)
+
+print(y_train.shape)
+
+m1_preds, m1_probs = model_1.predict(X_test)
     
 
 
