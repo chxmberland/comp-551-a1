@@ -46,7 +46,7 @@ nhanes["Fitness"].value_counts()
 # Changing classes column to integers
 nhanes['age_group'] = nhanes['age_group'].replace({"Adult": 0, "Senior": 1})
 print(nhanes)
-
+og_nhanes = nhanes
 
 ### ----- Summary stats ----- ###
 
@@ -132,7 +132,7 @@ def evaluate_acc(pred_y, real_y):
 
     train_accuracy = accurate_preds / len(pred_y)
     return train_accuracy
-
+'''
 # TODO: Remove noise features
 
 # ----- TRAINING THE MODEL -----#
@@ -215,31 +215,29 @@ print(str(round(accuracy, 2)))
 #
 #
 #
-
+'''
 print("\n----- DECISION TREE SECTION -----\n")
 
 print("\n----- TRAINING ON DATASET ONE -----\n")
 
 dataset_size = nhanes.shape[0]
 num_cols = nhanes.shape[1]
-#NEED TO FIGURE OUT HOW 
-nhanes = nhanes.to_numpy()
-
+nhanes = og_nhanes.to_numpy()
+'''
 #replace 'male' and 'female' with 0 and 1 respectively
-nhanes[:, 1] = np.where(nhanes[:, 1].astype(str) == 'Adult', 0, 1).astype(int)
+nhanes[:, 1] = np.where(nhanes[:, 1].astype(str) == 'Adult', 0, 1).astype(int)'''
 #change float col to int
-nhanes[:, -1] = (nhanes[:, -1] * 100).astype(int)
-
+nhanes[:, 5] *= 10#.astype(int)
+nhanes[:, -1] *= 100#.astype(int)
 
 #change all cols to int
 for col in range(num_cols):
-    if col == 1 or col == num_cols - 1:
-        continue
-    else:
-        nhanes[:, col] = (nhanes[:, col]).astype(int)
+    #if col == 1 or col == num_cols - 1:
+    #    continue
+    #else:
+    nhanes[:, col] = (nhanes[:, col]).astype(int)
 
-
-c = 0
+#c = 0
 #for i in range(num_cols):
 #    for j in range(dataset_size):
 #        if type(nhanes[j,i]) != int:
@@ -264,11 +262,16 @@ want_to_select = [True for _ in range(num_cols)]
 #remove ID and age label from X features
 want_to_select[0] = False
 want_to_select[1] = False
+want_to_select[2] = False
 x, y = nhanes[:,np.array(want_to_select)], nhanes[:,1]
+
+print(x.shape)
 
 '''x_train, y_train = x[inds[:train_size]], y[inds[:train_size]]
 x_test, y_test = x[inds[train_size:]], y[inds[train_size:]]'''
 
+print(x)
+print(y) 
 x_train, y_train = x[inds[:train_size]], y[inds[:train_size]]
 x_validate, y_validate = x[inds[train_size:train_size+validate_size]], y[inds[train_size:train_size+validate_size]]
 x_test, y_test = x[inds[train_size+validate_size:]], y[inds[train_size+validate_size:]]
@@ -294,7 +297,7 @@ for fn in cost_functions:
                     maxp = v[i]
                     maxIndex = i
             train_predictedClasses.append(maxIndex)
-
+        
         train_accurate_preds = 0
         for i in range(len(train_predictedClasses)):
             if train_predictedClasses[i] == y_test[i]:
@@ -314,6 +317,8 @@ for fn in cost_functions:
                     maxIndex = i
             val_predictedClasses.append(maxIndex)
 
+        #print(val_predictedClassProbs)
+        #print(y_validate)
         val_accuracy = evaluate_acc(val_predictedClasses, y_validate)
         #print(f'VALIDATION ACCURACY ON DATASET ONE OF DECISION TREE WITH COST FUNCTION {fn} AND MAX DEPTH {max_depth} IS {val_accuracy}')
 
